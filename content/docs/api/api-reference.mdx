@@ -1,0 +1,123 @@
+---
+title: API Reference
+description: Documentation for interacting with Kanari Network via API.
+---
+
+# API Reference
+
+The Kanari Network provides a suite of APIs for developers to interact with the blockchain, manage metadata, and query transaction data.
+
+<div className="p-4 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 mb-8">
+  <h4 className="text-blue-800 dark:text-blue-300 font-bold mb-1">Base URL</h4>
+  <p className="text-sm text-blue-700 dark:text-blue-400 font-mono">
+    https://api.kanari.network/v1
+  </p>
+</div>
+
+## Authentication
+
+All API requests require an API key passed in the header:
+
+```http
+Authorization: Bearer YOUR_API_KEY
+```
+
+---
+
+## Metadata API
+
+Endpoints for managing file metadata on the Kanari Network.
+
+### 1. Register Metadata
+`POST /metadata/register`
+
+Register new file metadata on-chain.
+
+**Request Body:**
+```json
+{
+  "file_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "file_name": "document.pdf",
+  "owner_address": "0x1234...abcd",
+  "metadata": {
+    "version": "1.0",
+    "description": "Project specifications"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "transaction_hash": "0xabc123...",
+  "on_chain_id": "meta_98765"
+}
+```
+
+### 2. Get Metadata
+`GET /metadata/{file_hash}`
+
+Retrieve metadata for a specific file hash.
+
+**Response:**
+```json
+{
+  "file_hash": "sha256:e3b0c4...",
+  "owner": "0x1234...",
+  "timestamp": "2024-02-04T12:00:00Z",
+  "verified": true
+}
+```
+
+---
+
+## Wallet & Token API
+
+Endpoints for managing accounts and token operations.
+
+### 3. Get Balance
+`GET /accounts/{address}/balance`
+
+Returns the token balance for a specific address.
+
+**Response:**
+```json
+{
+  "address": "0x1234...",
+  "balance": 1500.50,
+  "currency": "KARI"
+}
+```
+
+### 4. Initiate Transfer
+`POST /transfer`
+
+Send tokens from one account to another.
+
+**Request Body:**
+```json
+{
+  "to": "0xrecipient...address",
+  "amount": 50.0,
+  "memo": "Payment for services"
+}
+```
+
+---
+
+## Error Codes
+
+The API uses standard HTTP status codes:
+
+| Code | Description |
+| :--- | :--- |
+| `200` | **Success** - Request completed successfully. |
+| `400` | **Bad Request** - Invalid parameters. |
+| `401` | **Unauthorized** - Invalid or missing API key. |
+| `404` | **Not Found** - The requested resource does not exist. |
+| `500` | **Internal Server Error** - Something went wrong on our end. |
+
+<Callout type="info" title="SDK Support">
+  We also provide a Rust SDK for easier integration. Check out the [kanari-sdk](https://github.com/kanari-network/kanari-sdk) on GitHub.
+</Callout>

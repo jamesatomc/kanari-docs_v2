@@ -1,0 +1,52 @@
+---
+title: Transferring Coins
+description: Guide on how to transfer tokens within the Kanari Network.
+---
+
+# Transferring Coins
+
+Kanari Network allows secure and transparent token transfers between accounts. This process is managed by the Move VM to ensure data integrity and security.
+
+## Transfer Overview
+
+A transfer involves sending a specified amount of tokens from a sender's address to a recipient's address. Each transaction is recorded on-chain with a unique hash.
+
+## How to Transfer
+
+To perform a transfer using the Kanari CLI, use the following command structure:
+
+```bash
+cargo run -p kanari -- transfer --to <RECIPIENT_ADDRESS> --amount <AMOUNT>
+```
+
+### Example
+
+If you want to send **100 tokens** to the address `0x123...abc`:
+
+```bash
+cargo run -p kanari -- transfer --to 0x1234567890abcdef --amount 100
+```
+
+## Verification
+
+After the transfer is completed, you can verify the new balances by listing the wallets:
+
+```bash
+cargo run -p kanari -- list-wallets
+```
+
+<div className="p-4 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
+  <h4 className="text-blue-800 dark:text-blue-300 font-bold mb-1">Security Note</h4>
+  <p className="text-sm text-blue-700 dark:text-blue-400">
+    Always double-check the recipient's address before confirming the transfer. Transactions on the Kanari Network are immutable.
+  </p>
+</div>
+
+## Transaction Metadata
+
+Every transfer includes metadata that can be tracked:
+- **Sender Address**: The source of the tokens.
+- **Recipient Address**: The destination of the tokens.
+- **Amount**: The quantity of tokens transferred.
+- **Timestamp**: The exact time the transaction was recorded.
+- **Transaction Hash**: A unique identifier for the transfer.

@@ -1,0 +1,52 @@
+---
+title: Quick Start
+description: Learn how to set up and run the Kanari Network CLI.
+---
+
+# Quick Start
+
+Welcome to Kanari Network. This guide will walk you through the process of building and running the Kanari CLI on your local machine.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+- [Rust](https://www.rust-lang.org/tools/install) (Stable channel recommended)
+- Git
+
+## Building the CLI
+
+To build the Kanari CLI, clone the repository and run the following command in your terminal:
+
+```bash
+cargo build -p kanari
+```
+
+## Running the CLI
+
+Once built, you can use the CLI to interact with the network.
+
+### List Wallets
+
+To see the list of available wallets and their balances:
+
+```bash
+cargo run -p kanari -- list-wallets
+```
+
+> **Note:** On the first run, the CLI will perform a genesis process to initialize the local database located at `~/.kari/kanari-db/`.
+
+### Move VM Integration
+
+Kanari Network leverages the Move VM. You can run Move subcommands directly through the Kanari CLI:
+
+```bash
+# Create a new Move package
+cargo run -p kanari -- move new <package-name>
+
+# Run tests for a Move package
+cargo run -p kanari -- move test <path-to-move-package>
+```
+
+<Callout type="info" title="Blue Tip">
+  For more advanced configuration, check the `config` directory in the root of the project.
+</Callout>
