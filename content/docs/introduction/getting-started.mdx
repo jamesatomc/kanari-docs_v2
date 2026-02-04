@@ -10,15 +10,82 @@ Welcome to Kanari Network. This guide will walk you through the process of build
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
+
 - [Rust](https://www.rust-lang.org/tools/install) (Stable channel recommended)
 - Git
 
 ## Building the CLI
 
-To build the Kanari CLI, clone the repository and run the following command in your terminal:
+### 1. Install Ubuntu & macOS
+
+#### Install dependencies
 
 ```bash
-cargo build -p kanari
+sudo apt  install git curl cmake make gcc lld pkg-config libssl-dev libclang-dev libsqlite3-dev g++ protobuf-compiler
+```
+
+#### Install Rust
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+#### Clone the repository
+
+```bash
+git clone git clone https://github.com/kanari-network/kanari-sdk.git
+```
+
+#### Compile and install kanari CLI
+
+kanari and kanari-node
+
+```bash
+cd kanari-sdk
+cargo build --release
+
+# kanari
+cp target/release/kanari ~/.cargo/bin
+# kanari-node
+cp target/release/kanari-node ~/.cargo/bin
+```
+
+### 2. Install Windows
+
+#### Install dependencies
+
+To compile kanari on Windows, you'll need to install the following dependencies:
+
+1. [Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+2. [LLVM](https://releases.llvm.org/download.html)
+3. [Git](https://git-scm.com/download/win)
+
+#### Install Rust
+
+1. Download the Rust installer from the [official Rust website](https://www.rust-lang.org/tools/install).
+2. Run the installer and follow the on-screen instructions.
+3. After installation, open a new Command Prompt or PowerShell window and verify the installation by running:
+
+```powershell
+rustc --version
+```
+
+#### Clone the repository
+
+```powershell
+git clone https://github.com/kanari-network/kanari-sdk.git
+```
+
+#### Compile and install Kari
+
+```powershell
+cd kanari-sdk
+cargo build --release
+
+# kanari
+cp target/release/kanari ~/.cargo/bin
+# kanari-node
+cp target/release/kanari-node ~/.cargo/bin
 ```
 
 ## Running the CLI
@@ -48,5 +115,6 @@ cargo run -p kanari -- move test <path-to-move-package>
 ```
 
 <Callout type="info" title="Blue Tip">
-  For more advanced configuration, check the `config` directory in the root of the project.
+  For more advanced configuration, check the `config` directory in the root of
+  the project.
 </Callout>

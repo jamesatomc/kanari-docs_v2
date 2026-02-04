@@ -1,0 +1,112 @@
+---
+title: Setup Node
+description: Learn how to set up and run a Kanari Network node.
+---
+
+# Setup Node
+
+This guide provides instructions for setting up and running a Kanari Network node, based on the latest commands available in the `kanari-node` binary.
+
+## Prerequisites
+
+Ensure you have built the project as described in the [Compile and install](/docs/introduction/getting-started) guide. The binary `kanari-node` will be located at `target/release/kanari-node`.
+
+## Features
+
+- **P2P Networking**: Built with `libp2p`.
+- **Automatic Discovery**: mDNS for local network and Kademlia DHT for wider discovery.
+- **Message Propagation**: Gossipsub protocol for blocks and transactions.
+- **NAT Traversal**: Supports DCUtR (Hole Punching) and Relay Server mode.
+
+---
+
+## Single Node Setup
+
+To start a standard node with default settings:
+
+```bash
+kanari-node start --p2p-port 19000 --rpc-port 19001 --rpc-host 0.0.0.0 --data-dir ./data
+```
+
+### Available Options for `start`
+
+- `--p2p-port`: P2P listen port (default: `19000`).
+- `--rpc-port`: RPC listen port (default: `19001`).
+- `--rpc-host`: RPC listen host/IP (default: `0.0.0.0`).
+- `--data-dir`: Directory for blockchain and state storage.
+- `--relay-server`: Run as a relay server to help nodes behind NAT.
+- `--moderate`: Enable moderate mode for 8-16 cores (10K-30K TPS).
+- `--high-throughput`: Enable high-throughput mode for 500K+ TPS (requires 64+ cores).
+- `--authority-id`: Authority ID for DAG consensus (e.g., `0x1`).
+- `--authorities`: Comma-separated list of authority IDs.
+
+---
+
+## Multi-Node Setup (Local)
+
+Running multiple nodes locally is useful for testing consensus and synchronization. Each node **must** have a unique data directory and unique ports.
+
+### Manual Setup (Example for 3 Nodes)
+
+**Node 1 (Authority 0x1)**
+```bash
+kanari-node start --p2p-port 19000 --rpc-port 19001 --data-dir data/node1 --authority-id 0x1 --authorities 0x1,0x2,0x3
+```
+
+**Node 2 (Authority 0x2)**
+```bash
+kanari-node start --p2p-port 19010 --rpc-port 19011 --data-dir data/node2 --authority-id 0x2 --authorities 0x1,0x2,0x3
+```
+
+**Node 3 (Authority 0x3)**
+```bash
+kanari-node start --p2p-port 19020 --rpc-port 19021 --data-dir data/node3 --authority-id 0x3 --authorities 0x1,0x2,0x3
+```
+
+---
+
+## Local Node Mode
+
+For testing without P2P connectivity, you can run a local-only node:
+
+```bash
+kanari-node local
+```
+
+---
+
+## Monitoring and Tools
+
+The `kanari-node` binary includes several subcommands for managing and inspecting the node:
+
+### List Wallets
+List all wallet files managed by the node:
+```bash
+kanari-node list-wallets
+```
+
+### Blockchain Statistics
+Show current blockchain stats (height, total supply, total accounts):
+```bash
+kanari-node stats
+```
+
+### Account Information
+Get details about a specific account:
+```bash
+kanari-node account <ADDRESS>
+```
+
+### Block Information
+Get block details by height:
+```bash
+kanari-node block <HEIGHT>
+```
+
+---
+
+## Troubleshooting
+
+- **Discovered Peers**: Check the logs for `Node Peer ID:` and `Discovered peer:` to confirm P2P connectivity.
+- **Port Conflicts**: Ensure `--p2p-port` and `--rpc-port` are not used by other applications.
+- **Data Corruption**: If you encounter state issues, you can delete the `--data-dir` and restart the node to perform a fresh sync.

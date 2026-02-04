@@ -1,0 +1,109 @@
+---
+title: Kanari CLI
+description: Command-line interface for interacting with the Kanari Network.
+---
+
+# Kanari CLI
+
+The `kanari` CLI is the primary tool for managing wallets, transferring tokens, and interacting with Move packages on the Kanari Network.
+
+## Installation
+
+Ensure you have built the project and the `kanari` binary is in your PATH. See the [Compile and install](/docs/introduction/getting-started) guide for details.
+
+## Wallet Management
+
+### Create a New Wallet
+Generates a new mnemonic and keypair.
+```bash
+kanari create-wallet --password <YOUR_PASSWORD> --curve ed25519 --words 12
+```
+- `--curve`: Supports `ed25519`, `k256`, `p256`, `dilithium2`, `dilithium3`, `dilithium5`, `sphincs+`, and hybrids like `ed25519+dilithium3`.
+- `--words`: `12` or `24` words for the mnemonic.
+
+### Add/Import Wallet
+Import an existing wallet using a private key or seed phrase.
+```bash
+kanari add-wallet --password <YOUR_PASSWORD> --private-key <HEX_KEY>
+# OR
+kanari add-wallet --password <YOUR_PASSWORD> --seed "your mnemonic phrase..."
+```
+
+### List Wallets
+Shows all saved wallets and their current balances.
+```bash
+kanari list-wallets
+```
+
+### Wallet Info
+Show detailed information about a specific wallet.
+```bash
+kanari wallet-info --address <ADDRESS> --password <PASSWORD>
+```
+*Use `--show-secrets` to reveal the private key and mnemonic (use with caution).*
+
+---
+
+## Token Operations
+
+### Transfer Tokens
+Send Kanari tokens to another address.
+```bash
+kanari transfer --to <RECIPIENT_ADDRESS> --amount <AMOUNT> --password <PASSWORD>
+```
+
+### Request from Faucet
+Get Dev tokens for testing.
+```bash
+kanari faucet --to <ADDRESS> --amount <AMOUNT>
+```
+
+### Burn Tokens
+Permanently remove tokens from the total supply.
+```bash
+kanari burn --amount <AMOUNT> --password <PASSWORD>
+```
+
+---
+
+## Network & Account Info
+
+### Check Balance
+Query the balance of a specific address.
+```bash
+kanari balance --address <ADDRESS>
+```
+
+### Account Details
+Get full account state and resources.
+```bash
+kanari account get <ADDRESS>
+```
+
+### Network Stats
+Show overall blockchain statistics.
+```bash
+kanari stats
+```
+
+---
+
+## Move Development
+
+Manage Move packages and smart contracts directly from the CLI.
+
+```bash
+kanari move <COMMAND>
+```
+
+Common `move` commands:
+- `build`: Build the Move package in the current directory.
+- `test`: Run unit tests for the Move package.
+- `publish`: Deploy the Move package to the network.
+
+---
+
+## Advanced Options
+
+- **Curve Types**: Kanari supports Post-Quantum Cryptography (PQC). You can specify curves like `dilithium3` or `sphincs+` when creating or importing wallets.
+- **RPC Endpoint**: Many commands allow overriding the default RPC URL using the `--rpc` flag.
