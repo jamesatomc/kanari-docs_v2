@@ -1,0 +1,49 @@
+---
+title: Kanari CLI
+description: Command-line interface for interacting with the Kanari Network.
+---
+
+# Kanari CLI
+
+The `kanari` CLI is the primary tool for managing wallets, transferring tokens, and interacting with Move packages on the Kanari Network.
+
+## Installation
+
+Ensure you have built the project and the `kanari` binary is in your PATH. See the [Compile and install](/docs/introduction/getting-started) guide for details.
+
+## Commands
+
+### client
+Client operations (transfer, faucet, burn, stats, balance, account, envs).
+
+For a detailed guide on blockchain and token operations, see the [Client Operations](/docs/cli/client) page.
+
+Example:
+```bash
+kanari client transfer --to <RECIPIENT_ADDRESS> --amount <AMOUNT> --password <PASSWORD>
+```
+
+---
+
+### move
+Manage Move packages, tools, and smart contracts.
+
+For a detailed guide on Move development, see the [Move Development](/docs/cli/move) page.
+
+Example:
+```bash
+kanari move build
+```
+
+---
+
+### keytool
+Keytool operations (create, load, list, info, add wallets).
+
+For a detailed guide on wallet and key management, see the [Keytool Operations](/docs/cli/keytool) page.
+
+Example:
+```bash
+kanari keytool create-wallet --password <YOUR_PASSWORD>
+```
+

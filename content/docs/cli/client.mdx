@@ -1,0 +1,132 @@
+---
+title: Client Operations
+description: Interact with the Kanari Network blockchain, manage tokens, and query account information.
+---
+
+# Client Operations
+
+The `client` command group provides tools for interacting with the Kanari Network blockchain, including token transfers, faucet requests, and querying account or network status.
+
+## Usage
+
+```bash
+kanari client <COMMAND>
+```
+
+---
+
+## Commands
+
+### transfer
+Transfer Kanari tokens to another address.
+
+**Usage:**
+```bash
+kanari client transfer [OPTIONS] --to <TO> --amount <AMOUNT> --password <PASSWORD>
+```
+
+**Options:**
+- `-f, --from <FROM>`: Sender wallet address (optional). If omitted, uses selected wallet in config.
+- `-t, --to <TO>`: Recipient address (required).
+- `-a, --amount <AMOUNT>`: Amount in Kanari (will be converted to Mist).
+- `-p, --password <PASSWORD>`: Wallet password.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint URL.
+
+---
+
+### faucet
+Request tokens from the Dev faucet for testing.
+
+**Usage:**
+```bash
+kanari client faucet [OPTIONS] --amount <AMOUNT>
+```
+
+**Options:**
+- `-t, --to <TO>`: Recipient address (optional). If omitted, uses configured `active_address`.
+- `-a, --amount <AMOUNT>`: Amount in Kanari.
+- `--dev-address <DEV_ADDRESS>`: Dev wallet address override (optional).
+- `--dev-password <DEV_PASSWORD>`: Dev wallet password (optional; falls back to `KANARI_PASSWORD` env).
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint URL.
+
+---
+
+### burn
+Burn Kanari tokens from a wallet (permanently remove from total supply).
+
+**Usage:**
+```bash
+kanari client burn [OPTIONS] --amount <AMOUNT> --password <PASSWORD>
+```
+
+**Options:**
+- `-f, --from <FROM>`: Wallet address to burn from (optional). If omitted, uses selected wallet in config.
+- `-a, --amount <AMOUNT>`: Amount in Kanari to burn.
+- `-p, --password <PASSWORD>`: Wallet password.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint URL.
+
+---
+
+### stats
+Show overall blockchain statistics.
+
+**Usage:**
+```bash
+kanari client stats [OPTIONS]
+```
+
+**Options:**
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint URL.
+
+---
+
+### balance
+Show token balance for a specific address.
+
+**Usage:**
+```bash
+kanari client balance [OPTIONS] --address <ADDRESS>
+```
+
+**Options:**
+- `--address <ADDRESS>`: Address to query.
+- `-d, --detailed`: Show detailed information.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint URL.
+
+---
+
+### account
+Account-related operations.
+
+**Usage:**
+```bash
+kanari client account <COMMAND>
+```
+
+**Subcommands:**
+- `get`: Get account info (address, balance, modules, token balances).
+  ```bash
+  kanari client account get <ADDRESS>
+  ```
+
+---
+
+### envs
+Manage configured environments and RPC endpoints.
+
+**Usage:**
+```bash
+kanari client envs <COMMAND>
+```
+
+**Subcommands:**
+- `list`: List all configured environments.
+- `switch`: Switch to a different environment.
+- `new`: Add a new environment.
+- `remove`: Remove an environment.
+
+---
+
+## Options
+
+- `-h, --help`: Print help information for the `client` command or a specific subcommand.

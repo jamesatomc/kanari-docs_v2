@@ -1,0 +1,9 @@
+{
+  "title": "CLI",
+  "pages": [
+    "kanari-cli",
+    "client",
+    "move",
+    "keytool"
+  ]
+}

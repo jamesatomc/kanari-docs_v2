@@ -1,0 +1,92 @@
+---
+title: Keytool Operations
+description: Manage wallets, keys, and mnemonics on the Kanari Network.
+---
+
+# Keytool Operations
+
+Keytool is a set of utilities for managing your identities on the Kanari Network, including creating, importing, and listing wallets.
+
+## Usage
+
+```bash
+kanari keytool <COMMAND>
+```
+
+---
+
+## Commands
+
+### create-wallet
+Create a new wallet with kanari-crypto.
+
+**Usage:**
+```bash
+kanari keytool create-wallet [OPTIONS] --password <PASSWORD>
+```
+
+**Options:**
+- `-p, --password <PASSWORD>`: Password for wallet encryption (required).
+- `-c, --curve <CURVE>`: Curve type (`ed25519`, `k256`, `p256`, `dilithium2`, `dilithium3`, `dilithium5`, `sphincs+`, `ed25519+dilithium3`, `k256+dilithium3`) [default: `ed25519`].
+- `-w, --words <WORDS>`: Number of seed words (`12` or `24`) [default: `12`].
+
+---
+
+### load-wallet
+Load an existing wallet into the CLI.
+
+**Usage:**
+```bash
+kanari keytool load-wallet --address <ADDRESS> --password <PASSWORD>
+```
+
+**Options:**
+- `-a, --address <ADDRESS>`: Wallet address to load.
+- `-p, --password <PASSWORD>`: Password to decrypt wallet.
+
+---
+
+### list-wallets
+List all wallets stored in the CLI with their current balances.
+
+**Usage:**
+```bash
+kanari keytool list-wallets
+```
+
+---
+
+### wallet-info
+Show detailed information about a specific wallet.
+
+**Usage:**
+```bash
+kanari keytool wallet-info [OPTIONS] --address <ADDRESS> --password <PASSWORD>
+```
+
+**Options:**
+- `-a, --address <ADDRESS>`: Wallet address.
+- `-p, --password <PASSWORD>`: Password to decrypt wallet.
+- `--show-secrets`: Show private key and seed phrase (**Warning: this is dangerous and should be used with caution!**).
+
+---
+
+### add-wallet
+Import an existing wallet from a private key or seed phrase.
+
+**Usage:**
+```bash
+kanari keytool add-wallet [OPTIONS] --password <PASSWORD>
+```
+
+**Options:**
+- `--private-key <PRIVATE_KEY>`: Import using a raw private key (hex with or without kanari prefix).
+- `--seed <SEED>`: Import using a BIP39 seed phrase.
+- `-p, --password <PASSWORD>`: Password for wallet encryption.
+- `-c, --curve <CURVE>`: Curve type (supports classical and PQC private-key imports: `ed25519`, `k256`, `p256`, `dilithium2`, `dilithium3`, `dilithium5`, `sphincs+`) [default: `ed25519`].
+
+---
+
+## Options
+
+- `-h, --help`: Print help information for the `keytool` command or a specific subcommand.
