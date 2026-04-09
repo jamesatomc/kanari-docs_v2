@@ -5,97 +5,60 @@ description: Documentation for interacting with Kanari Network via API.
 
 # API Reference
 
-The Kanari Network provides a suite of APIs for developers to interact with the blockchain, manage metadata, and query transaction data.
+The Kanari Network provides a suite of APIs for developers to interact with the blockchain, manage metadata, deploy smart contracts, and query transaction data. It is divided into two main systems: the **REST API** for general data and wallet management, and the **JSON-RPC API** for deep Node interactions and Move Modules.
 
-<div className="p-4 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 mb-8">
-  <h4 className="text-blue-800 dark:text-blue-300 font-bold mb-1">Base URL</h4>
+{/* <div className="p-4 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 mb-8">
+  <h4 className="text-blue-800 dark:text-blue-300 font-bold mb-1">REST API Base URL</h4>
   <p className="text-sm text-blue-700 dark:text-blue-400 font-mono">
-    https://api.kanari.network/v1
+    <code>https://api.kanari.network/v1</code>
   </p>
-</div>
+</div> */}
 
 ## Authentication
 
-All API requests require an API key passed in the header:
+All REST API requests require an API key passed in the header:
 
 ```http
 Authorization: Bearer YOUR_API_KEY
 ```
 
----
+## Part 1: REST API
 
-## Metadata API
+The REST API provides a set of endpoints for managing accounts, token balances, and transactions.
 
-Endpoints for managing file metadata on the Kanari Network.
-
-### 1. Register Metadata
-`POST /metadata/register`
-
-Register new file metadata on-chain.
-
-**Request Body:**
-```json
-{
-  "file_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "file_name": "document.pdf",
-  "owner_address": "0x1234...abcd",
-  "metadata": {
-    "version": "1.0",
-    "description": "Project specifications"
-  }
-}
-```
-
-**Response:**
-```json
-{
-  "status": "success",
-  "transaction_hash": "0xabc123...",
-  "on_chain_id": "meta_98765"
-}
-```
-
-### 2. Get Metadata
-`GET /metadata/{file_hash}`
-
-Retrieve metadata for a specific file hash.
-
-**Response:**
-```json
-{
-  "file_hash": "sha256:e3b0c4...",
-  "owner": "0x1234...",
-  "timestamp": "2024-02-04T12:00:00Z",
-  "verified": true
-}
-```
-
----
-
-## Wallet & Token API
+### Wallet & Token API
 
 Endpoints for managing accounts and token operations.
 
-### 3. Get Balance
-`GET /accounts/{address}/balance`
+#### 3. Get Balance
+
+**GET** `/accounts/{address}/balance`
 
 Returns the token balance for a specific address.
 
 **Response:**
+
 ```json
 {
   "address": "0x1234...",
   "balance": 1500.50,
-  "currency": "KARI"
+  "currency": "KANARI",
+  "token" : {
+    "name": "Kanari Token",
+    "symbol": "KANARI",
+    "decimals": 18
+  }
 }
 ```
 
-### 4. Initiate Transfer
-`POST /transfer`
+#### 4. Initiate Transfer
+
+**POST** `/transfer`
 
 Send tokens from one account to another.
 
 **Request Body:**
+
 ```json
 {
   "to": "0xrecipient...address",
@@ -104,7 +67,121 @@ Send tokens from one account to another.
 }
 ```
 
----
+## Part 2: JSON-RPC API
+
+The JSON-RPC server is used for low-level node interactions, particularly for publishing and querying Move modules.
+
+### Request Wrapper
+
+All requests use the JSON-RPC 2.0 wrapper via POST with `Content-Type: application/json`:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "kanari_<methodName>",
+  "params": { /* method-specific fields */ },
+  "id": 1
+}
+```
+
+### Module Methods
+
+#### kanari_publishModule
+
+Publish a new Move module to the network.
+
+**Request params:**
+
+```json
+{
+  "sender": "0x...",
+  "module_bytes": [1,2,3],
+  "module_name": "MyModule",
+  "gas_limit": 1000000,
+  "gas_price": 1,
+  "sequence_number": 0,
+  "signature": null,
+  "execute_immediate": false
+}
+```
+
+**Response (Success):**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "result": { "hash": "<tx-hash-hex>", "status": "pending", "action": "publish" },
+  "id": 1
+}
+```
+
+#### kanari_upgradeModule
+
+Upgrade an existing module. The request params are identical to `kanari_publishModule`.
+
+**Response (Success):**
+
+```json
+{ 
+  "jsonrpc": "2.0", 
+  "result": { "hash": "<tx-hash>", "status": "pending", "action": "upgrade" }, 
+  "id": 1 
+}
+```
+
+#### kanari_getModule
+
+Fetch module info and bytecode.
+
+**Request params:**
+
+```json
+{ "address": "0x...", "name": "MyModule" }
+```
+
+**Response result:**
+
+```json
+{
+  "address": "0x...",
+  "name": "MyModule",
+  "bytecode_hash": "<blake3-hex>",
+  "size": 1234,
+  "dependencies": []
+}
+```
+
+#### kanari_listModules
+
+List all modules available in the runtime. Send an empty object `{}` as params.
+
+#### kanari_verifyModule
+
+Verify module bytecode locally without publishing.
+
+**Request params:**
+
+```json
+{ "module_bytes": [1,2,3] }
+```
+
+### cURL Examples
+
+**Publish a Module (Submit Pending TX):**
+
+```bash
+curl -X POST http://127.0.0.1:19001/rpc \
+  -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","method":"kanari_publishModule","params":{"sender":"0x1","module_bytes":[1,2,3],"module_name":"M","gas_limit":1000000,"gas_price":1,"sequence_number":0},"id":1}'
+```
+
+**Get a Module:**
+
+```bash
+curl -X POST http://127.0.0.1:19001/rpc \
+  -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","method":"kanari_getModule","params":{"address":"0x1","name":"M"},"id":1}'
+```
 
 ## Error Codes
 
