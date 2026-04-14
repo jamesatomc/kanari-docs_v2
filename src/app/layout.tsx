@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     default: 'Kanari Docs',
     template: '%s | Kanari Docs',
   },
-  description: 'Official documentation for Kanari Network - A modern blockchain platform',
+  description: 'Official documentation for Kanari Network - A High-Performance Event-Driven Ledger for Web5 Infrastructure. Powered by MoveVM and Post-Quantum Cryptography (PQC), providing a sub-0.1s secure data plane for Web2 integration and verifiable resource management.',
   icons: {
     icon: '/icon.png',
     apple: '/icon.png',

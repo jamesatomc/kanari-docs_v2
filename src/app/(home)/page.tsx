@@ -6,7 +6,7 @@ export default function HomePage() {
     <main className="flex flex-1 flex-col">
       {/* Hero Section */}
       <section className="px-4 py-6">
-        <div className="relative w-full min-h-[500px] rounded-[40px] overflow-hidden hero-bg flex items-center px-8 md:px-16">
+        <div className="relative w-full min-h-125 rounded-[40px] overflow-hidden hero-bg flex items-center px-8 md:px-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center w-full max-w-7xl mx-auto">
             <div className="space-y-4">
               <h1 className="text-5xl md:text-8xl font-bold text-white leading-[1.1]">
@@ -20,9 +20,7 @@ export default function HomePage() {
             </div>
             <div className="flex flex-col items-end text-right space-y-6">
               <p className="text-zinc-300 text-sm md:text-base max-w-sm leading-relaxed">
-                Explore the secure blockchain platform for file metadata storage
-                and verification. Powered by Move VM for unparalleled security
-                and decentralization.
+                Explore Official documentation for Kanari Network - A High-Performance Event-Driven Ledger for Web5 Infrastructure. Powered by MoveVM and Post-Quantum Cryptography (PQC), providing a sub-0.1s secure data plane for Web2 integration and verifiable resource management.
               </p>
               <div className="flex flex-wrap justify-end gap-4">
                 <Link
@@ -61,14 +59,14 @@ export default function HomePage() {
       <section className="py-20 px-4 md:px-16 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <div className="grid grid-cols-2 gap-4">
-            <div className="aspect-[4/5] rounded-[30px] overflow-hidden shadow-2xl mt-12 bg-zinc-100 dark:bg-zinc-900">
+            <div className="aspect-4/5 rounded-[30px] overflow-hidden shadow-2xl mt-12 bg-zinc-100 dark:bg-zinc-900">
               <img
                 src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=2070&auto=format&fit=crop"
                 alt="Blockchain Technology"
                 className="w-full h-full object-cover opacity-80"
               />
             </div>
-            <div className="aspect-[4/5] rounded-[30px] overflow-hidden shadow-2xl bg-zinc-100 dark:bg-zinc-900">
+            <div className="aspect-4/5 rounded-[30px] overflow-hidden shadow-2xl bg-zinc-100 dark:bg-zinc-900">
               <img
                 src="https://images.unsplash.com/photo-1644088379091-d574269d422f?q=80&w=2093&auto=format&fit=crop"
                 alt="Security and Code"
