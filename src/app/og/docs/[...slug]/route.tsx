@@ -51,7 +51,12 @@ export async function GET(
         </div>
         Kanari Docs
       </div>
-      <div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <div
           style={{
             marginBottom: 18,

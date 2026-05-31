@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import Script from "next/script";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://docs.kanarinetwork.site",
+  ),
   title: {
     default: "Kanari Docs",
     template: "%s | Kanari Docs",

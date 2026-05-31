@@ -130,6 +130,12 @@ export function MarkdownRenderer({ content }: { content: string }) {
       continue;
     }
 
+    if (/^\s{0,3}((\*\s*){3,}|(-\s*){3,}|(_\s*){3,})$/.test(line)) {
+      nodes.push(<hr key={index} />);
+      index++;
+      continue;
+    }
+
     const fence = line.match(/^```(\w+)?/);
     if (fence) {
       const language = fence[1] ?? "text";
@@ -241,7 +247,8 @@ export function MarkdownRenderer({ content }: { content: string }) {
       !/^\d+\.\s/.test(lines[index]) &&
       !lines[index].startsWith("```") &&
       !lines[index].startsWith("|") &&
-      !lines[index].startsWith(">")
+      !lines[index].startsWith(">") &&
+      !/^\s{0,3}((\*\s*){3,}|(-\s*){3,}|(_\s*){3,})$/.test(lines[index])
     ) {
       paragraph.push(lines[index]);
       index++;

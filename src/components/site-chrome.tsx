@@ -1,13 +1,17 @@
 "use client";
 
-import { ArrowRight, Github, Search } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { NavItem } from "@/lib/source";
+import { DocsSearch } from "./docs-search";
 import { ThemeToggle } from "./theme-toggle";
 
 function NavLinks({ items }: { items: NavItem[] }) {
+  const pathname = usePathname();
+
   return (
     <div>
       {items.map((item) =>
@@ -16,7 +20,7 @@ function NavLinks({ items }: { items: NavItem[] }) {
             <p className="docs-nav-title">{item.title}</p>
             {item.children.map((child) => (
               <Link
-                className="docs-nav-link"
+                className={`docs-nav-link ${pathname === child.url ? "docs-nav-link--active" : ""}`}
                 href={child.url ?? "/docs"}
                 key={child.url ?? child.title}
               >
@@ -26,7 +30,7 @@ function NavLinks({ items }: { items: NavItem[] }) {
           </div>
         ) : (
           <Link
-            className="docs-nav-link"
+            className={`docs-nav-link ${pathname === item.url ? "docs-nav-link--active" : ""}`}
             href={item.url ?? "/docs"}
             key={item.url ?? item.title}
           >
@@ -96,9 +100,7 @@ export function SiteHeader() {
 
         <div className="site-header__actions">
           <ThemeToggle />
-          <Link className="icon-button" href="/docs" aria-label="Search docs">
-            <Search size={19} />
-          </Link>
+          <DocsSearch />
           <button
             aria-expanded={menuOpen}
             aria-label="Toggle navigation"
@@ -111,11 +113,11 @@ export function SiteHeader() {
           </button>
           <a
             className="header-button"
-            href="https://github.com/kanari-network"
+            href="https://kanarinetwork.site/"
             rel="noreferrer"
             target="_blank"
           >
-            GitHub <Github size={15} />
+            Network <span aria-hidden="true">+</span>
           </a>
         </div>
       </header>
@@ -165,6 +167,8 @@ export function SiteFooter() {
       </Link>
       <p>Developer documentation for verifiable metadata infrastructure.</p>
       <div>
+        <a href="https://kanarinetwork.site/">Network</a>
+        <a href="https://kanari-blog.vercel.app/">Articles</a>
         <Link href="/docs">Docs</Link>
         <Link href="/docs/introduction/getting-started">Quick start</Link>
         <Link href="/docs/api/api-reference">API</Link>

@@ -132,44 +132,78 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section-wrap">
-        <div className="resource-grid">
-          <div className="resource-card">
-            <span className="resource-card__index">
-              <Code2 size={14} /> Code
-            </span>
-            <h3>Copy-ready examples</h3>
+      <section className="docs-capabilities">
+        <div className="section-wrap">
+          <div className="section-heading">
+            <p className="section-kicker">Built for builders</p>
+            <h2>
+              A clearer way to
+              <br />
+              <span>move forward.</span>
+            </h2>
             <p>
-              Commands and payloads are kept close to each concept so builders
-              can move quickly.
+              Read focused guides, copy practical commands, and keep the
+              security model visible while you build.
             </p>
-            <strong>Browse docs</strong>
           </div>
-          <div className="resource-card resource-card--purple">
-            <span className="resource-card__index">
-              <ShieldCheck size={14} /> Trust
-            </span>
-            <h3>Secure by design</h3>
-            <p>
-              Follow patterns for verifiable metadata, signatures, and
-              predictable resource flows.
-            </p>
-            <strong>Review model</strong>
-          </div>
-          <div className="resource-card">
-            <span className="resource-card__index">
-              <Route size={14} /> Flow
-            </span>
-            <h3>Clear paths</h3>
-            <p>
-              From local setup to API calls, each route is designed for
-              repeatable implementation.
-            </p>
-            <strong>
-              Open guide <BookOpen size={14} />
-            </strong>
+          <div className="resource-grid">
+            <div className="resource-card">
+              <span className="resource-card__index">
+                <Code2 size={14} /> Code
+              </span>
+              <h3>Copy-ready examples</h3>
+              <p>
+                Commands and payloads are kept close to each concept so builders
+                can move quickly.
+              </p>
+              <strong>Browse docs</strong>
+            </div>
+            <div className="resource-card resource-card--purple">
+              <span className="resource-card__index">
+                <ShieldCheck size={14} /> Trust
+              </span>
+              <h3>Secure by design</h3>
+              <p>
+                Follow patterns for verifiable metadata, signatures, and
+                predictable resource flows.
+              </p>
+              <strong>Review model</strong>
+            </div>
+            <div className="resource-card">
+              <span className="resource-card__index">
+                <Route size={14} /> Flow
+              </span>
+              <h3>Clear paths</h3>
+              <p>
+                From local setup to API calls, each route is designed for
+                repeatable implementation.
+              </p>
+              <strong>
+                Open guide <BookOpen size={14} />
+              </strong>
+            </div>
           </div>
         </div>
+      </section>
+
+      <section className="docs-cta section-wrap">
+        <p className="section-kicker">Start building</p>
+        <h2>
+          Ready to ship
+          <br />
+          <span>something useful?</span>
+        </h2>
+        <p>
+          Follow the quick start, configure your node, and connect your first
+          application to Kanari Network.
+        </p>
+        <Link
+          className="button button--dark"
+          href="/docs/introduction/getting-started"
+        >
+          Open quick start <ArrowRight size={16} />
+        </Link>
+        <i aria-hidden="true" />
       </section>
     </main>
   );

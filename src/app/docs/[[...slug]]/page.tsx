@@ -1,9 +1,12 @@
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { MobileDocNav } from "@/components/site-chrome";
 import {
   generateDocParams,
+  getAdjacentDocPages,
   getDocNav,
   getDocPage,
   getPageImage,
@@ -13,6 +16,7 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
   const params = await props.params;
   const page = getDocPage(params.slug);
   if (!page) notFound();
+  const { previous, next } = getAdjacentDocPages(page);
 
   return (
     <article className="docs-article">
@@ -27,6 +31,29 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
       <div className="docs-content-card">
         <MarkdownRenderer content={page.content} />
       </div>
+      <nav className="docs-pagination" aria-label="Documentation pages">
+        {previous ? (
+          <Link className="docs-pagination__card" href={previous.url}>
+            <span>
+              <ArrowLeft size={14} /> Previous
+            </span>
+            <strong>{previous.title}</strong>
+          </Link>
+        ) : (
+          <span />
+        )}
+        {next ? (
+          <Link
+            className="docs-pagination__card docs-pagination__card--next"
+            href={next.url}
+          >
+            <span>
+              Next <ArrowRight size={14} />
+            </span>
+            <strong>{next.title}</strong>
+          </Link>
+        ) : null}
+      </nav>
     </article>
   );
 }

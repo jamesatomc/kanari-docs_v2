@@ -153,8 +153,29 @@ export function getDocPages() {
     .sort((a, b) => a.url.localeCompare(b.url));
 }
 
+export function getAdjacentDocPages(page: DocPage) {
+  const pagesByUrl = new Map(getDocPages().map((item) => [item.url, item]));
+  const orderedUrls = flattenNav(getDocNav());
+  const pages = orderedUrls.flatMap((url) => {
+    const item = pagesByUrl.get(url);
+    return item ? [item] : [];
+  });
+  const index = pages.findIndex((item) => item.url === page.url);
+
+  return {
+    previous: index > 0 ? pages[index - 1] : null,
+    next: index >= 0 && index < pages.length - 1 ? pages[index + 1] : null,
+  };
+}
+
 export function getDocNav() {
   return navForDir(docsRoot);
+}
+
+function flattenNav(items: NavItem[]): string[] {
+  return items.flatMap((item) =>
+    item.children ? flattenNav(item.children) : item.url ? [item.url] : [],
+  );
 }
 
 export function generateDocParams() {
