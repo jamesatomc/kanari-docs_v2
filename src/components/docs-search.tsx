@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Search, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Search } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -10,6 +10,25 @@ interface SearchResult {
   description: string;
   excerpt: string;
   url: string;
+}
+
+function highlightMatch(value: string, query: string) {
+  const needle = query.trim();
+  if (!needle) return value;
+
+  const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  let offset = 0;
+
+  return value.split(new RegExp(`(${escaped})`, "gi")).map((part) => {
+    const start = offset;
+    offset += part.length;
+
+    return part.toLowerCase() === needle.toLowerCase() ? (
+      <mark key={`${start}-${part}`}>{part}</mark>
+    ) : (
+      part
+    );
+  });
 }
 
 export function DocsSearch() {
@@ -115,10 +134,11 @@ export function DocsSearch() {
                   />
                   <button
                     aria-label="Close search"
+                    className="search-dialog__escape"
                     onClick={closeSearch}
                     type="button"
                   >
-                    <X size={19} />
+                    Esc
                   </button>
                 </div>
 
@@ -134,16 +154,26 @@ export function DocsSearch() {
                     <Link
                       className="search-result"
                       href={result.url}
-                      key={result.url}
+                      key={`${result.url}-${result.title}-${result.excerpt}`}
                       onClick={closeSearch}
                     >
                       <div>
-                        <strong>{result.title}</strong>
-                        <p>{result.description || result.excerpt}</p>
+                        <strong>{highlightMatch(result.title, query)}</strong>
+                        <p>
+                          {highlightMatch(
+                            result.excerpt || result.description,
+                            query,
+                          )}
+                        </p>
                       </div>
                       <ArrowRight aria-hidden="true" size={16} />
                     </Link>
                   ))}
+                </div>
+                <div className="search-dialog__footer">
+                  <span>Filter</span>
+                  <strong>All</strong>
+                  <ChevronDown aria-hidden="true" size={13} />
                 </div>
               </section>
             </div>,

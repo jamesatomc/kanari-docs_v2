@@ -193,15 +193,15 @@ button {
 }
 
 .search-overlay {
-  padding: 126px 18px 18px;
+  padding: 18px;
   position: fixed;
   inset: 0;
   z-index: 50;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  background: rgba(13, 21, 18, 0.72);
-  backdrop-filter: blur(12px);
+  background: rgba(13, 21, 18, 0.68);
+  backdrop-filter: blur(9px);
 }
 
 .search-overlay__backdrop {
@@ -213,22 +213,22 @@ button {
 }
 
 .search-dialog {
-  width: min(720px, 100%);
-  max-height: min(540px, calc(100vh - 160px));
+  width: min(680px, 100%);
+  max-height: min(570px, calc(100vh - 36px));
   overflow: hidden;
   position: relative;
   border: 1px solid var(--line);
-  border-radius: 25px;
+  border-radius: 14px;
   background: var(--paper);
-  box-shadow: 0 34px 110px rgba(13, 21, 18, 0.34);
+  box-shadow: 0 28px 90px rgba(13, 21, 18, 0.44);
 }
 
 .search-dialog__header {
-  min-height: 72px;
-  padding: 0 17px;
+  min-height: 58px;
+  padding: 0 12px 0 15px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -239,30 +239,32 @@ button {
   outline: 0;
   color: var(--ink);
   background: transparent;
-  font-size: 19px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 700;
 }
 
-.search-dialog__header button {
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
+.search-dialog__escape {
+  padding: 7px 8px;
   border: 1px solid var(--line);
-  border-radius: 50%;
+  border-radius: 7px;
   color: var(--ink);
   background: transparent;
   cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .search-results {
-  max-height: min(468px, calc(100vh - 232px));
+  min-height: 74px;
+  max-height: min(446px, calc(100vh - 152px));
   overflow-y: auto;
-  padding: 13px 13px 16px;
+  padding: 9px 7px;
 }
 
 .search-results__meta {
-  margin: 2px 7px 11px;
+  margin: 4px 9px 8px;
   color: var(--muted);
   font-size: 11px;
   font-weight: 950;
@@ -271,12 +273,12 @@ button {
 }
 
 .search-result {
-  padding: 15px 14px;
+  padding: 11px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  border-radius: 16px;
+  border-radius: 8px;
   border: 1px solid transparent;
   transition:
     border 0.2s ease,
@@ -289,21 +291,45 @@ button {
 }
 
 .search-result strong {
-  font-size: 18px;
-  font-weight: 950;
-  letter-spacing: -0.045em;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.025em;
 }
 
 .search-result p {
-  margin: 5px 0 0;
+  margin: 3px 0 0;
   color: var(--muted);
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .search-result svg {
   flex: 0 0 auto;
   color: var(--purple-strong);
+}
+
+.search-result mark {
+  color: inherit;
+  background: transparent;
+  text-decoration: underline;
+  text-decoration-color: var(--lime);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.search-dialog__footer {
+  min-height: 40px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.search-dialog__footer strong {
+  color: var(--ink);
 }
 
 .theme-toggle {
@@ -1590,7 +1616,8 @@ button {
 }
 
 .dark .search-dialog__header input::placeholder,
-.dark .search-results__meta {
+.dark .search-results__meta,
+.dark .search-dialog__footer {
   color: rgba(247, 244, 235, 0.58);
 }
 
@@ -1607,6 +1634,14 @@ button {
 
 .dark .search-result svg {
   color: var(--lime);
+}
+
+.dark .search-dialog__footer {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.dark .search-dialog__footer strong {
+  color: #f7f4eb;
 }
 
 .dark .docs-prose a {
@@ -1820,16 +1855,16 @@ button {
   }
 
   .search-overlay {
-    padding: 82px 12px 12px;
+    padding: 12px;
   }
 
   .search-dialog {
-    max-height: min(520px, calc(100vh - 94px));
-    border-radius: 20px;
+    max-height: calc(100vh - 24px);
+    border-radius: 13px;
   }
 
   .search-results {
-    max-height: min(448px, calc(100vh - 166px));
+    max-height: calc(100vh - 142px);
   }
 
   .home-hero {
