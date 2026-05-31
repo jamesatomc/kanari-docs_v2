@@ -87,11 +87,12 @@ function entriesFor(page: DocPage): SearchEntry[] {
 }
 
 export async function GET(request: Request) {
-  const query =
-    new URL(request.url).searchParams.get("q")?.toLowerCase().trim() ?? "";
+  const url = new URL(request.url);
+  const query = url.searchParams.get("q")?.toLowerCase().trim() ?? "";
+  const pages = getDocPages();
   const seen = new Set<string>();
 
-  const results = getDocPages()
+  const results = pages
     .flatMap(entriesFor)
     .filter((entry) => {
       if (!query) return false;

@@ -2,8 +2,10 @@
 
 import { ArrowRight, ChevronDown, Search } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { allDocsSpaces, getDocsSpace, withDocsSpace } from "@/lib/docs-spaces";
 
 interface SearchResult {
   title: string;
@@ -32,11 +34,14 @@ function highlightMatch(value: string, query: string) {
 }
 
 export function DocsSearch() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [activeDocsSpace, setActiveDocsSpace] = useState("all");
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const docsSpace = getDocsSpace(pathname).href;
 
   const closeSearch = useCallback(() => {
     setOpen(false);
@@ -63,15 +68,9 @@ export function DocsSearch() {
   useEffect(() => {
     if (!open) return;
 
-    if (!query.trim()) {
-      setResults([]);
-      setLoading(false);
-      return;
-    }
-
     const controller = new AbortController();
     const timeout = window.setTimeout(async () => {
-      setLoading(true);
+      if (query.trim()) setLoading(true);
 
       try {
         const response = await fetch(
@@ -95,6 +94,14 @@ export function DocsSearch() {
       window.clearTimeout(timeout);
     };
   }, [open, query]);
+
+  const activeFilterTitle =
+    activeDocsSpace === "all"
+      ? "All"
+      : (allDocsSpaces.find((space) => space.href === activeDocsSpace)?.title ??
+        "All");
+  const resultDocsSpace =
+    activeDocsSpace === "all" ? docsSpace : activeDocsSpace;
 
   return (
     <>
@@ -153,7 +160,7 @@ export function DocsSearch() {
                   {results.map((result) => (
                     <Link
                       className="search-result"
-                      href={result.url}
+                      href={withDocsSpace(result.url, resultDocsSpace)}
                       key={`${result.url}-${result.title}-${result.excerpt}`}
                       onClick={closeSearch}
                     >
@@ -170,11 +177,37 @@ export function DocsSearch() {
                     </Link>
                   ))}
                 </div>
-                <div className="search-dialog__footer">
-                  <span>Filter</span>
-                  <strong>All</strong>
-                  <ChevronDown aria-hidden="true" size={13} />
-                </div>
+                <details className="search-dialog__footer">
+                  <summary>
+                    <span>Filter</span>
+                    <strong>{activeFilterTitle}</strong>
+                    <ChevronDown aria-hidden="true" size={13} />
+                  </summary>
+                  <div className="search-filter-menu">
+                    {[{ href: "all", title: "All" }, ...allDocsSpaces].map(
+                      (space) => (
+                        <button
+                          aria-pressed={activeDocsSpace === space.href}
+                          className={
+                            activeDocsSpace === space.href
+                              ? "search-filter-menu__option search-filter-menu__option--active"
+                              : "search-filter-menu__option"
+                          }
+                          key={space.href}
+                          onClick={(event) => {
+                            setActiveDocsSpace(space.href);
+                            event.currentTarget
+                              .closest("details")
+                              ?.removeAttribute("open");
+                          }}
+                          type="button"
+                        >
+                          {space.title}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                </details>
               </section>
             </div>,
             document.body,

@@ -1,16 +1,44 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Check,
+  ChevronsUpDown,
+  FileText,
+  Layers3,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import {
+  allDocsSpaces,
+  type DocsSpace,
+  getDocsSpace,
+  withDocsSpace,
+} from "@/lib/docs-spaces";
 import type { NavItem } from "@/lib/source";
 import { DocsSearch } from "./docs-search";
 import { ThemeToggle } from "./theme-toggle";
 
+const docsSpaceIcons: Record<DocsSpace["icon"], typeof BookOpen> = {
+  book: BookOpen,
+  file: FileText,
+  layers: Layers3,
+};
+
+function isActiveDocUrl(
+  pathname: string,
+  url: string | undefined,
+  docsSpace: string,
+) {
+  return pathname === withDocsSpace(url, docsSpace);
+}
+
 function NavLinks({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
+  const docsSpace = getDocsSpace(pathname).href;
 
   return (
     <div>
@@ -20,8 +48,8 @@ function NavLinks({ items }: { items: NavItem[] }) {
             <p className="docs-nav-title">{item.title}</p>
             {item.children.map((child) => (
               <Link
-                className={`docs-nav-link ${pathname === child.url ? "docs-nav-link--active" : ""}`}
-                href={child.url ?? "/docs"}
+                className={`docs-nav-link ${isActiveDocUrl(pathname, child.url, docsSpace) ? "docs-nav-link--active" : ""}`}
+                href={withDocsSpace(child.url, docsSpace)}
                 key={child.url ?? child.title}
               >
                 {child.title}
@@ -30,8 +58,8 @@ function NavLinks({ items }: { items: NavItem[] }) {
           </div>
         ) : (
           <Link
-            className={`docs-nav-link ${pathname === item.url ? "docs-nav-link--active" : ""}`}
-            href={item.url ?? "/docs"}
+            className={`docs-nav-link ${isActiveDocUrl(pathname, item.url, docsSpace) ? "docs-nav-link--active" : ""}`}
+            href={withDocsSpace(item.url, docsSpace)}
             key={item.url ?? item.title}
           >
             {item.title}
@@ -39,6 +67,46 @@ function NavLinks({ items }: { items: NavItem[] }) {
         ),
       )}
     </div>
+  );
+}
+
+function DocsSwitcher() {
+  const pathname = usePathname();
+  const currentSpace = getDocsSpace(pathname);
+  const CurrentIcon = docsSpaceIcons[currentSpace.icon];
+
+  return (
+    <details className="docs-switcher">
+      <summary>
+        <CurrentIcon aria-hidden="true" size={17} />
+        <span>
+          <strong>{currentSpace.title}</strong>
+          <small>{currentSpace.description}</small>
+        </span>
+        <ChevronsUpDown aria-hidden="true" size={16} />
+      </summary>
+      <div className="docs-switcher__menu">
+        {allDocsSpaces.map((space) => {
+          const Icon = docsSpaceIcons[space.icon];
+          const isCurrent = currentSpace.href === space.href;
+
+          return (
+            <Link
+              className="docs-switcher__link"
+              href={space.href}
+              key={space.href}
+            >
+              <Icon aria-hidden="true" size={17} />
+              <span>
+                <strong>{space.title}</strong>
+                <small>{space.description}</small>
+              </span>
+              {isCurrent ? <Check aria-hidden="true" size={15} /> : null}
+            </Link>
+          );
+        })}
+      </div>
+    </details>
   );
 }
 
@@ -138,6 +206,7 @@ export function DocsShell({
       <SiteHeader />
       <div className="docs-layout section-wrap">
         <aside className="docs-sidebar">
+          <DocsSwitcher />
           <NavLinks items={nav} />
         </aside>
         {children}
@@ -152,6 +221,7 @@ export function MobileDocNav({ nav }: { nav: NavItem[] }) {
     <details className="mobile-doc-nav">
       <summary>Documentation</summary>
       <div className="mt-5">
+        <DocsSwitcher />
         <NavLinks items={nav} />
       </div>
     </details>
