@@ -1,106 +1,173 @@
+import { ArrowRight, BookOpen, Code2, Route, ShieldCheck } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { MoveRight } from "lucide-react";
+
+const resources = [
+  {
+    index: "01",
+    title: "Quick start",
+    description:
+      "Build the Kanari CLI, prepare your local environment, and run your first commands.",
+    href: "/docs/introduction/getting-started",
+    label: "Start setup",
+    className: "",
+  },
+  {
+    index: "02",
+    title: "API reference",
+    description:
+      "Connect applications to Kanari REST and JSON-RPC surfaces with practical examples.",
+    href: "/docs/api/api-reference",
+    label: "Read API",
+    className: "resource-card--purple",
+  },
+  {
+    index: "03",
+    title: "Move tooling",
+    description:
+      "Use the MoveVM workflow for packages, tests, modules, and secure execution.",
+    href: "/docs/cli/move",
+    label: "Open CLI docs",
+    className: "resource-card--dark",
+  },
+];
 
 export default function HomePage() {
   return (
-    <main className="flex flex-1 flex-col">
-      {/* Hero Section */}
-      <section className="px-4 py-6">
-        <div className="relative w-full min-h-125 rounded-[40px] overflow-hidden hero-bg flex items-center px-8 md:px-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center w-full max-w-7xl mx-auto">
-            <div className="space-y-4">
-              <h1 className="text-5xl md:text-8xl font-bold text-white leading-[1.1]">
-                Kanari
-                <br />
-                Network.
-              </h1>
-              <p className="text-zinc-400 font-medium tracking-widest text-sm md:text-base uppercase">
-                Documentation Portal
-              </p>
-            </div>
-            <div className="flex flex-col items-end text-right space-y-6">
-              <p className="text-zinc-300 text-sm md:text-base max-w-sm leading-relaxed">
-                Explore Official documentation for Kanari Network - A High-Performance Event-Driven Ledger for Web5 Infrastructure. Powered by MoveVM and Post-Quantum Cryptography (PQC), providing a sub-0.1s secure data plane for Web2 integration and verifiable resource management.
-              </p>
-              <div className="flex flex-wrap justify-end gap-4">
-                <Link
-                  href="/docs"
-                  className="px-6 py-3 rounded-full bg-white text-black font-semibold flex items-center gap-2 hover:bg-zinc-200 transition-colors"
-                >
-                  Start Reading <MoveRight className="w-4 h-4" />
-                </Link>
-                <Link
-                  href="/docs/api/api-reference"
-                  className="px-6 py-3 rounded-full border border-white/30 text-white font-semibold hover:bg-white/10 transition-colors"
-                >
-                  API Reference
-                </Link>
+    <main>
+      <section className="home-hero section-wrap">
+        <div>
+          <p className="section-kicker">Kanari Documentation</p>
+          <h1>
+            Build with
+            <br />
+            <span>Kanari.</span>
+          </h1>
+          <p className="hero-description">
+            Developer documentation for Kanari Network, the event-driven ledger
+            powered by MoveVM, post-quantum cryptography, and verifiable
+            metadata workflows.
+          </p>
+          <div className="hero-actions">
+            <Link className="button button--dark" href="/docs">
+              Start reading <ArrowRight size={16} />
+            </Link>
+            <Link
+              className="button button--ghost"
+              href="/docs/api/api-reference"
+            >
+              API reference
+            </Link>
+          </div>
+        </div>
+
+        <div className="hero-visual" aria-hidden="true">
+          <div className="network-graphic">
+            <div className="network-glow network-glow--one" />
+            <div className="network-glow network-glow--two" />
+            <div className="network-rotor">
+              <div className="network-orbit network-orbit--one" />
+              <div className="network-orbit network-orbit--two" />
+              <div className="network-orbit network-orbit--three" />
+              <div className="network-node network-node--one">
+                <span>SDK</span>
               </div>
+              <div className="network-node network-node--two">
+                <span>PQC</span>
+              </div>
+              <div className="network-node network-node--three">
+                <span>API</span>
+              </div>
+              <div className="network-node network-node--four">
+                <span>MOVE</span>
+              </div>
+              <div className="network-spark network-spark--one" />
+              <div className="network-spark network-spark--two" />
+              <div className="network-spark network-spark--three" />
             </div>
+            <div className="network-core">
+              <Image
+                src="/kariicon1.png"
+                alt=""
+                width={92}
+                height={92}
+                priority
+              />
+            </div>
+            <div className="hero-sticker hero-sticker--top">Docs ready</div>
+            <div className="hero-sticker hero-sticker--bottom">Build fast</div>
           </div>
         </div>
       </section>
 
-      {/* Technology Section */}
-      <section className="py-20 px-4 text-center">
-        <div className="max-w-4xl mx-auto space-y-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 dark:text-white">
-            Powering the Future of On-Chain Metadata
+      <section className="section-wrap">
+        <div className="section-heading">
+          <p className="section-kicker">Developer paths</p>
+          <h2>
+            Find the shortest route
+            <br />
+            <span>to production.</span>
           </h2>
-          <p className="text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
-            Kanari Network provides a trustless infrastructure for developers to
-            manage file ownership, timestamping, and immutable references with
-            ease.
+          <p>
+            The docs are organized around practical workflows: configure the
+            node, use the CLI, submit transfers, and integrate application APIs.
           </p>
         </div>
+
+        <div className="resource-grid">
+          {resources.map((resource) => (
+            <Link
+              className={`resource-card ${resource.className}`}
+              href={resource.href}
+              key={resource.title}
+            >
+              <span className="resource-card__index">{resource.index}</span>
+              <h3>{resource.title}</h3>
+              <p>{resource.description}</p>
+              <strong>
+                {resource.label} <ArrowRight size={14} />
+              </strong>
+            </Link>
+          ))}
+        </div>
       </section>
 
-      {/* About Section */}
-      <section className="py-20 px-4 md:px-16 max-w-7xl mx-auto w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="aspect-4/5 rounded-[30px] overflow-hidden shadow-2xl mt-12 bg-zinc-100 dark:bg-zinc-900">
-              <img
-                src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=2070&auto=format&fit=crop"
-                alt="Blockchain Technology"
-                className="w-full h-full object-cover opacity-80"
-              />
-            </div>
-            <div className="aspect-4/5 rounded-[30px] overflow-hidden shadow-2xl bg-zinc-100 dark:bg-zinc-900">
-              <img
-                src="https://images.unsplash.com/photo-1644088379091-d574269d422f?q=80&w=2093&auto=format&fit=crop"
-                alt="Security and Code"
-                className="w-full h-full object-cover opacity-80"
-              />
-            </div>
+      <section className="section-wrap">
+        <div className="resource-grid">
+          <div className="resource-card">
+            <span className="resource-card__index">
+              <Code2 size={14} /> Code
+            </span>
+            <h3>Copy-ready examples</h3>
+            <p>
+              Commands and payloads are kept close to each concept so builders
+              can move quickly.
+            </p>
+            <strong>Browse docs</strong>
           </div>
-          <div className="space-y-8">
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold tracking-[0.2em] text-zinc-400 uppercase">
-                (01) CORE TECHNOLOGY
-              </p>
-              <h2 className="text-4xl md:text-6xl font-bold text-zinc-900 dark:text-white leading-[1.1]">
-                Secure. Scalable. Verifiable.
-              </h2>
-            </div>
-            <div className="space-y-4 text-zinc-500 dark:text-zinc-400 leading-relaxed text-sm md:text-base">
-              <p>
-                We leverage the Move Virtual Machine (Move VM) to ensure that
-                every byte of metadata is handled with the highest level of
-                security and predictability.
-              </p>
-              <p>
-                Our documentation covers everything from basic integration to
-                advanced smart contract development, helping you build the next
-                generation of decentralized applications.
-              </p>
-            </div>
-            <Link
-              href="/docs/introduction/getting-started"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-black dark:bg-white text-white dark:text-black font-bold hover:opacity-80 transition-opacity"
-            >
-              Get Started <MoveRight className="w-4 h-4" />
-            </Link>
+          <div className="resource-card resource-card--purple">
+            <span className="resource-card__index">
+              <ShieldCheck size={14} /> Trust
+            </span>
+            <h3>Secure by design</h3>
+            <p>
+              Follow patterns for verifiable metadata, signatures, and
+              predictable resource flows.
+            </p>
+            <strong>Review model</strong>
+          </div>
+          <div className="resource-card">
+            <span className="resource-card__index">
+              <Route size={14} /> Flow
+            </span>
+            <h3>Clear paths</h3>
+            <p>
+              From local setup to API calls, each route is designed for
+              repeatable implementation.
+            </p>
+            <strong>
+              Open guide <BookOpen size={14} />
+            </strong>
           </div>
         </div>
       </section>

@@ -6,15 +6,11 @@
     "build": "next build",
     "dev": "next dev",
     "start": "next start",
-    "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
-    "postinstall": "fumadocs-mdx",
+    "types:check": "next typegen && tsc --noEmit",
     "lint": "biome check",
     "format": "biome format --write"
   },
   "dependencies": {
-    "fumadocs-core": "16.4.9",
-    "fumadocs-mdx": "14.2.6",
-    "fumadocs-ui": "16.4.9",
     "lucide-react": "^0.563.0",
     "next": "16.1.4",
     "react": "^19.2.3",
