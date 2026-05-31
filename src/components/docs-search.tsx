@@ -2,7 +2,8 @@
 
 import { ArrowRight, Search, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface SearchResult {
   title: string;
@@ -18,20 +19,36 @@ export function DocsSearch() {
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const closeSearch = useCallback(() => {
+    setOpen(false);
+    setQuery("");
+  }, []);
+
   useEffect(() => {
     if (!open) return;
 
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     inputRef.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") closeSearch();
     };
 
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, closeSearch]);
 
   useEffect(() => {
     if (!open) return;
+
+    if (!query.trim()) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
 
     const controller = new AbortController();
     const timeout = window.setTimeout(async () => {
@@ -60,11 +77,6 @@ export function DocsSearch() {
     };
   }, [open, query]);
 
-  const closeSearch = () => {
-    setOpen(false);
-    setQuery("");
-  };
-
   return (
     <>
       <button
@@ -76,63 +88,68 @@ export function DocsSearch() {
         <Search size={19} />
       </button>
 
-      {open ? (
-        <div className="search-overlay">
-          <button
-            aria-label="Close search"
-            className="search-overlay__backdrop"
-            onClick={closeSearch}
-            type="button"
-          />
-          <section
-            aria-label="Search documentation"
-            aria-modal="true"
-            className="search-dialog"
-            role="dialog"
-          >
-            <div className="search-dialog__header">
-              <Search aria-hidden="true" size={20} />
-              <input
-                aria-label="Search docs"
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search docs..."
-                ref={inputRef}
-                type="search"
-                value={query}
-              />
+      {open
+        ? createPortal(
+            <div className="search-overlay">
               <button
                 aria-label="Close search"
+                className="search-overlay__backdrop"
                 onClick={closeSearch}
                 type="button"
+              />
+              <section
+                aria-label="Search documentation"
+                aria-modal="true"
+                className="search-dialog"
+                role="dialog"
               >
-                <X size={19} />
-              </button>
-            </div>
+                <div className="search-dialog__header">
+                  <Search aria-hidden="true" size={20} />
+                  <input
+                    aria-label="Search docs"
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder="Search docs..."
+                    ref={inputRef}
+                    type="search"
+                    value={query}
+                  />
+                  <button
+                    aria-label="Close search"
+                    onClick={closeSearch}
+                    type="button"
+                  >
+                    <X size={19} />
+                  </button>
+                </div>
 
-            <div className="search-results">
-              <p className="search-results__meta">
-                {loading
-                  ? "Searching..."
-                  : `${results.length} ${results.length === 1 ? "result" : "results"}`}
-              </p>
-              {results.map((result) => (
-                <Link
-                  className="search-result"
-                  href={result.url}
-                  key={result.url}
-                  onClick={closeSearch}
-                >
-                  <div>
-                    <strong>{result.title}</strong>
-                    <p>{result.description || result.excerpt}</p>
-                  </div>
-                  <ArrowRight aria-hidden="true" size={16} />
-                </Link>
-              ))}
-            </div>
-          </section>
-        </div>
-      ) : null}
+                <div className="search-results">
+                  <p className="search-results__meta">
+                    {!query.trim()
+                      ? "Type to search documentation"
+                      : loading
+                        ? "Searching..."
+                        : `${results.length} ${results.length === 1 ? "result" : "results"}`}
+                  </p>
+                  {results.map((result) => (
+                    <Link
+                      className="search-result"
+                      href={result.url}
+                      key={result.url}
+                      onClick={closeSearch}
+                    >
+                      <div>
+                        <strong>{result.title}</strong>
+                        <p>{result.description || result.excerpt}</p>
+                      </div>
+                      <ArrowRight aria-hidden="true" size={16} />
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            </div>,
+            document.body,
+          )
+        : null}
     </>
   );
 }

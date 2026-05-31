@@ -19,6 +19,12 @@ export interface NavItem {
   children?: NavItem[];
 }
 
+export interface TocItem {
+  id: string;
+  title: string;
+  level: 2 | 3;
+}
+
 interface Frontmatter {
   title?: string;
   description?: string;
@@ -52,6 +58,34 @@ function titleFromSlug(slug: string) {
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+export function slugifyHeading(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[`*_~[\]()]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
+export function getDocToc(content: string): TocItem[] {
+  return content
+    .split(/\r?\n/)
+    .flatMap((line) => {
+      const match = line.match(/^(#{2,3})\s+(.+)$/);
+      if (!match) return [];
+
+      const title = match[2].trim();
+      return [
+        {
+          id: slugifyHeading(title),
+          title: title.replace(/[`*_~]/g, ""),
+          level: match[1].length as 2 | 3,
+        },
+      ];
+    })
+    .filter((item) => item.id);
 }
 
 function fileForSlugs(slugs?: string[]) {
