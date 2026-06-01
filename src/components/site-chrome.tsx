@@ -201,7 +201,7 @@ export function SiteHeader({ docsSpaces }: { docsSpaces: DocsSpace[] }) {
             Developers
           </Link>
           <Link
-            href="https://kanari-blog.vercel.app/"
+            href="https://blog.kanarinetwork.site/"
             onClick={() => setMenuOpen(false)}
           >
             Blog
@@ -299,7 +299,7 @@ export function SiteFooter() {
       <p>Developer documentation for verifiable metadata infrastructure.</p>
       <div>
         <a href="https://kanarinetwork.site/">Network</a>
-        <a href="https://kanari-blog.vercel.app/">Articles</a>
+        <a href="https://blog.kanarinetwork.site/">Articles</a>
         <Link href="/docs">Docs</Link>
         <Link href="/docs/introduction/getting-started">Quick start</Link>
         <Link href="/docs/api/api-reference">API</Link>
