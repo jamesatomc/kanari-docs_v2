@@ -245,6 +245,27 @@ export function SiteHeader({ docsSpaces }: { docsSpaces: DocsSpace[] }) {
   );
 }
 
+export function SiteShell({
+  children,
+  docsSpaces,
+  theme,
+}: {
+  children: React.ReactNode;
+  docsSpaces: DocsSpace[];
+  theme?: DocsSpaceTheme;
+}) {
+  return (
+    <div className="site-shell">
+      <div className="site-noise" />
+      <div className="docs-space-theme" style={themeStyle(theme)}>
+        <SiteHeader docsSpaces={docsSpaces} />
+        {children}
+        <SiteFooter />
+      </div>
+    </div>
+  );
+}
+
 export function DocsShell({
   children,
   docsSpaces,
@@ -257,20 +278,15 @@ export function DocsShell({
   theme?: DocsSpaceTheme;
 }) {
   return (
-    <div className="site-shell">
-      <div className="site-noise" />
-      <div className="docs-space-theme" style={themeStyle(theme)}>
-        <SiteHeader docsSpaces={docsSpaces} />
-        <div className="docs-layout section-wrap">
-          <aside className="docs-sidebar">
-            <DocsSwitcher docsSpaces={docsSpaces} />
-            <NavLinks docsSpaces={docsSpaces} items={nav} />
-          </aside>
-          {children}
-        </div>
-        <SiteFooter />
+    <SiteShell docsSpaces={docsSpaces} theme={theme}>
+      <div className="docs-layout section-wrap">
+        <aside className="docs-sidebar">
+          <DocsSwitcher docsSpaces={docsSpaces} />
+          <NavLinks docsSpaces={docsSpaces} items={nav} />
+        </aside>
+        {children}
       </div>
-    </div>
+    </SiteShell>
   );
 }
 

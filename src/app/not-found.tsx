@@ -1,13 +1,11 @@
 import { ArrowLeft, BookOpen } from "lucide-react";
 import Link from "next/link";
-import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { SiteShell } from "@/components/site-chrome";
 import { getDocsSpaces } from "@/lib/docs-spaces";
 
 export default function NotFound() {
   return (
-    <div className="site-shell">
-      <div className="site-noise" />
-      <SiteHeader docsSpaces={getDocsSpaces()} />
+    <SiteShell docsSpaces={getDocsSpaces()}>
       <main className="not-found-page section-wrap">
         <section className="not-found-card">
           <p className="section-kicker">404 / PAGE NOT FOUND</p>
@@ -32,7 +30,6 @@ export default function NotFound() {
           <i aria-hidden="true" />
         </section>
       </main>
-      <SiteFooter />
-    </div>
+    </SiteShell>
   );
 }
