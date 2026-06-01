@@ -3,6 +3,7 @@ import { ArrowRight, Info } from "lucide-react";
 import Link from "next/link";
 import * as runtime from "react/jsx-runtime";
 import remarkGfm from "remark-gfm";
+import { CodeBlock } from "@/components/code-block";
 import { slugifyHeading } from "@/lib/source";
 
 interface CardProps {
@@ -88,6 +89,7 @@ export async function MarkdownRenderer({ content }: { content: string }) {
           h4: heading(4),
           h5: heading(5),
           h6: heading(6),
+          pre: CodeBlock,
         }}
       />
     </div>

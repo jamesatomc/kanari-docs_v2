@@ -36,8 +36,8 @@ export default function HomePage() {
   return (
     <main>
       <section className="home-hero section-wrap">
-        <div>
-          <p className="section-kicker">Kanari Documentation</p>
+        <div className="hero-copy">
+          <p className="section-kicker">A network for what&apos;s next</p>
           <h1>
             Build with
             <br />
