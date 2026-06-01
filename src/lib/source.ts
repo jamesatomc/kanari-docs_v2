@@ -11,6 +11,7 @@ export interface DocPage {
   raw: string;
   path: string;
   slugs: string[];
+  updatedAt: string;
   url: string;
 }
 
@@ -33,6 +34,7 @@ export interface TocItem {
 interface Frontmatter {
   title?: string;
   description?: string;
+  updated?: string;
 }
 
 function parseFrontmatter(raw: string): { data: Frontmatter; content: string } {
@@ -113,6 +115,15 @@ function slugsFromFile(docsRoot: string, filePath: string) {
   return withoutExt === "index" ? [] : withoutExt.split("/");
 }
 
+function getUpdatedAt(filePath: string, configuredDate?: string) {
+  if (configuredDate) {
+    const date = new Date(configuredDate);
+    if (!Number.isNaN(date.getTime())) return date.toISOString();
+  }
+
+  return fs.statSync(filePath).mtime.toISOString();
+}
+
 function readDoc(
   docsRoot: string,
   href: string,
@@ -122,6 +133,7 @@ function readDoc(
 
   const raw = fs.readFileSync(filePath, "utf8");
   const { data, content } = parseFrontmatter(raw);
+  const updatedAt = getUpdatedAt(filePath, data.updated);
   const slugs = slugsFromFile(docsRoot, filePath);
   const fallbackTitle = slugs.length
     ? titleFromSlug(slugs.at(-1) ?? "Docs")
@@ -134,6 +146,7 @@ function readDoc(
     raw,
     path: path.relative(docsRoot, filePath).replace(/\\/g, "/"),
     slugs,
+    updatedAt,
     url: `${href}${slugs.length ? `/${slugs.join("/")}` : ""}`,
   };
 }
@@ -327,4 +340,13 @@ export function getLLMText(page: DocPage) {
   return `# ${page.title}
 
 ${page.content}`;
+}
+
+export function formatDocUpdatedAt(updatedAt: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    month: "long",
+    timeZone: "UTC",
+    year: "numeric",
+  }).format(new Date(updatedAt));
 }

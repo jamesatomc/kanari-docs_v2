@@ -1,6 +1,8 @@
 import "./global.css";
 import type { Metadata } from "next";
 import Script from "next/script";
+import { getSiteTheme } from "@/lib/theme";
+import { themeStyle } from "@/lib/theme-style";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -19,9 +21,15 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: LayoutProps<"/">) {
+  const theme = getSiteTheme();
+  const themeVariables = {
+    ...themeStyle(theme.light, "light"),
+    ...themeStyle(theme.dark, "dark"),
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body style={themeVariables}>
         <Script id="theme-mode" strategy="beforeInteractive">
           {`(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d);}catch(e){}})();`}
         </Script>

@@ -15,10 +15,12 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   type DocsSpace,
+  type DocsSpaceTheme,
   getDocsSpace,
   withDocsSpace,
 } from "@/lib/docs-space-types";
 import type { NavItem } from "@/lib/source";
+import { themeStyle } from "@/lib/theme-style";
 import { DocsSearch } from "./docs-search";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -247,13 +249,15 @@ export function DocsShell({
   children,
   docsSpaces,
   nav,
+  theme,
 }: {
   children: React.ReactNode;
   docsSpaces: DocsSpace[];
   nav: NavItem[];
+  theme?: DocsSpaceTheme;
 }) {
   return (
-    <>
+    <div className="docs-space-theme" style={themeStyle(theme)}>
       <SiteHeader docsSpaces={docsSpaces} />
       <div className="docs-layout section-wrap">
         <aside className="docs-sidebar">
@@ -263,7 +267,7 @@ export function DocsShell({
         {children}
       </div>
       <SiteFooter />
-    </>
+    </div>
   );
 }
 

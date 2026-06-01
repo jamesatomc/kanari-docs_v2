@@ -48,12 +48,15 @@ Create an `.mdx` file with frontmatter:
 ---
 title: Article title
 description: A short description
+updated: 2026-06-01
 ---
 
 # Article title
 
 Start writing your content here.
 ```
+
+The page displays its last updated date automatically from the `.mdx` file modification time. Add the optional `updated` field when you want to publish a specific date.
 
 ## Add a Documentation Space
 
@@ -128,6 +131,66 @@ Folder-level `meta.json` also supports collapsible sidebar groups:
   "pages": ["...", "!draft"]
 }
 ```
+
+## Customize the Theme
+
+Edit `content/theme.json` to customize the palette for the entire website without changing CSS or TypeScript:
+
+```json
+{
+  "light": {
+    "lime": "#ff4d4f",
+    "purple": "#ffc9c9",
+    "purpleStrong": "#c62828",
+    "cream": "#f7f4eb",
+    "deepGreen": "#111b18",
+    "warmWhite": "#f7f4eb",
+    "line": "rgba(17, 27, 24, 0.18)",
+    "ink": "#111b18",
+    "muted": "rgba(17, 27, 24, 0.66)",
+    "onAccent": "#111b18",
+    "paper": "#fffdf7",
+    "sectionSurface": "#ffc9c9"
+  },
+  "dark": {
+    "lime": "#ff6b6d",
+    "purple": "#5c2526",
+    "purpleStrong": "#ff9a9b",
+    "cream": "#170d0d",
+    "deepGreen": "#111b18",
+    "warmWhite": "#f7f4eb",
+    "line": "rgba(255, 255, 255, 0.16)",
+    "ink": "#fff4f4",
+    "muted": "rgba(255, 244, 244, 0.68)",
+    "onAccent": "#111b18",
+    "paper": "#251515",
+    "sectionSurface": "#202b27"
+  }
+}
+```
+
+- `light` controls light mode.
+- `dark` controls dark mode.
+- `lime` controls buttons, active navigation, and highlights.
+- `purple` controls purple-style surfaces.
+- `purpleStrong` controls strong accent text.
+- `cream` controls the page background.
+- `deepGreen` controls dark buttons and cards.
+- `warmWhite` controls text displayed on dark surfaces.
+- `line` controls lines and card outlines.
+- `paper` controls cards and overlays.
+- `ink` controls primary text.
+- `muted` controls secondary text.
+- `onAccent` controls text displayed on accent-colored surfaces.
+- `sectionSurface` controls large contrasting sections.
+
+Legacy aliases still work: `accent` maps to `lime`, `accentStrong` to `purpleStrong`, `background` to `cream`, `border` to `line`, `secondary` to `purple`, `invertedSurface` to `deepGreen`, and `invertedText` to `warmWhite`.
+
+Every field is optional. An empty `{}` file uses the built-in Kanari preset from `content/theme-default.json`, and any value in `content/theme.json` overrides only that token.
+
+Transparent card backgrounds, hover states, overlays, glows, code surfaces, and mobile menus are derived from these tokens automatically. You do not need to edit CSS to keep the whole interface in the same palette.
+
+To override colors for a single documentation space, add an optional `theme` object inside `space` in that folder's `meta.json`.
 
 ## Next Steps
 

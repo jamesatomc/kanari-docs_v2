@@ -70,16 +70,16 @@ export default function HomePage() {
               <div className="network-orbit network-orbit--two" />
               <div className="network-orbit network-orbit--three" />
               <div className="network-node network-node--one">
-                <span>SDK</span>
+                <span>01</span>
               </div>
               <div className="network-node network-node--two">
-                <span>PQC</span>
+                <span>K</span>
               </div>
               <div className="network-node network-node--three">
-                <span>API</span>
+                <span>+</span>
               </div>
               <div className="network-node network-node--four">
-                <span>MOVE</span>
+                <span>M</span>
               </div>
               <div className="network-spark network-spark--one" />
               <div className="network-spark network-spark--two" />
@@ -94,8 +94,16 @@ export default function HomePage() {
                 priority
               />
             </div>
-            <div className="hero-sticker hero-sticker--top">Docs ready</div>
-            <div className="hero-sticker hero-sticker--bottom">Build fast</div>
+          </div>
+          <div className="hero-sticker hero-sticker--top">
+            MOVE
+            <br />
+            POWERED
+          </div>
+          <div className="hero-sticker hero-sticker--bottom">
+            OPEN
+            <br />
+            NETWORK
           </div>
         </div>
       </section>

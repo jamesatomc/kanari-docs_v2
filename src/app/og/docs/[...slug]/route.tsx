@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
 import { getDocPage, getDocPages, getPageImage } from "@/lib/source";
+import { getSiteTheme } from "@/lib/theme";
 
 export const revalidate = false;
 
@@ -11,6 +12,7 @@ export async function GET(
   const { slug } = await params;
   const page = getDocPage(slug.slice(0, -1));
   if (!page) notFound();
+  const theme = getSiteTheme().light;
 
   return new ImageResponse(
     <div
@@ -21,8 +23,8 @@ export async function GET(
         flexDirection: "column",
         justifyContent: "space-between",
         padding: 72,
-        color: "#111b18",
-        background: "linear-gradient(135deg, #f7f4eb 0%, #cabdff 100%)",
+        color: theme.ink,
+        background: `linear-gradient(135deg, ${theme.background} 0%, ${theme.secondary} 100%)`,
         fontFamily: "Inter, Arial, sans-serif",
       }}
     >
@@ -43,8 +45,8 @@ export async function GET(
             alignItems: "center",
             justifyContent: "center",
             borderRadius: 999,
-            color: "white",
-            background: "#ff9900",
+            color: theme.invertedText,
+            background: theme.accent,
           }}
         >
           K
@@ -60,7 +62,7 @@ export async function GET(
         <div
           style={{
             marginBottom: 18,
-            color: "#7868da",
+            color: theme.accentStrong,
             fontSize: 24,
             fontWeight: 900,
           }}
@@ -81,7 +83,7 @@ export async function GET(
           style={{
             maxWidth: 760,
             marginTop: 24,
-            color: "rgba(17,27,24,.68)",
+            color: theme.muted,
             fontSize: 28,
           }}
         >

@@ -7,6 +7,7 @@ import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { MobileDocNav } from "@/components/site-chrome";
 import { getDocsSpaces } from "@/lib/docs-spaces";
 import {
+  formatDocUpdatedAt,
   getAdjacentDocPages,
   getDocNav,
   getDocPage,
@@ -43,6 +44,12 @@ export default async function Page({ params }: DocsPageProps) {
           {page.description ? (
             <p className="docs-description">{page.description}</p>
           ) : null}
+          <p className="docs-updated">
+            Last updated{" "}
+            <time dateTime={page.updatedAt}>
+              {formatDocUpdatedAt(page.updatedAt)}
+            </time>
+          </p>
         </div>
         <div className="docs-content-card">
           <MarkdownRenderer content={page.content} />

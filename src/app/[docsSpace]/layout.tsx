@@ -12,12 +12,17 @@ export default async function Layout({
 }) {
   const { docsSpace } = await params;
   const docsSpaces = getDocsSpaces();
-  if (!docsSpaces.some((space) => space.href === `/${docsSpace}`)) {
-    notFound();
-  }
+  const currentSpace = docsSpaces.find(
+    (space) => space.href === `/${docsSpace}`,
+  );
+  if (!currentSpace) notFound();
 
   return (
-    <DocsShell docsSpaces={docsSpaces} nav={getDocNav(docsSpace)}>
+    <DocsShell
+      docsSpaces={docsSpaces}
+      nav={getDocNav(docsSpace)}
+      theme={currentSpace.theme}
+    >
       {children}
     </DocsShell>
   );

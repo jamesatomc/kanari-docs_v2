@@ -11,7 +11,7 @@ export function LLMCopyButton({ markdownUrl }: { markdownUrl: string }) {
 
   return (
     <button
-      className="inline-flex items-center gap-2 rounded-full border border-black/10 px-4 py-2 text-sm font-bold hover:bg-black/5 disabled:opacity-60 dark:border-white/10 dark:hover:bg-white/8"
+      className="ai-page-action inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold disabled:opacity-60"
       disabled={isLoading}
       onClick={async () => {
         setLoading(true);
@@ -43,7 +43,7 @@ export function ViewOptions({
 }) {
   return (
     <a
-      className="inline-flex items-center gap-2 rounded-full border border-black/10 px-4 py-2 text-sm font-bold hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/8"
+      className="ai-page-action inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold"
       href={githubUrl}
       rel="noreferrer"
       target="_blank"

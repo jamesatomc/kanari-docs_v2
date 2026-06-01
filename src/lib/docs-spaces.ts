@@ -10,6 +10,7 @@ interface SpaceMeta {
   href?: string;
   icon?: DocsSpace["icon"];
   source?: string;
+  theme?: DocsSpace["theme"];
   title?: string;
 }
 
@@ -42,6 +43,7 @@ export function getDocsSpaces(): DocsSpace[] {
           description: meta.space.description ?? "",
           href: meta.space.href ?? `/${entry.name}`,
           icon: isIcon(meta.space.icon) ? meta.space.icon : "file",
+          theme: meta.space.theme,
           title: meta.space.title,
         },
       ];
