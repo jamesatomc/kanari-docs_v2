@@ -4,6 +4,7 @@ import {
   ArrowRight,
   BookOpen,
   Check,
+  ChevronDown,
   ChevronsUpDown,
   FileText,
   Layers3,
@@ -35,6 +36,19 @@ function isActiveDocUrl(
   return pathname === withDocsSpace(url, docsSpace);
 }
 
+function hasActiveChild(
+  item: NavItem,
+  pathname: string,
+  docsSpace: string,
+): boolean {
+  if (item.url && isActiveDocUrl(pathname, item.url, docsSpace)) return true;
+  return (
+    item.children?.some((child) =>
+      hasActiveChild(child, pathname, docsSpace),
+    ) ?? false
+  );
+}
+
 function NavLinks({
   docsSpaces,
   items,
@@ -46,31 +60,61 @@ function NavLinks({
   const docsSpace = getDocsSpace(docsSpaces, pathname).href;
 
   return (
-    <div>
-      {items.map((item) =>
-        item.children ? (
-          <div className="docs-nav-group" key={item.title}>
-            <p className="docs-nav-title">{item.title}</p>
-            {item.children.map((child) => (
-              <Link
-                className={`docs-nav-link ${isActiveDocUrl(pathname, child.url, docsSpace) ? "docs-nav-link--active" : ""}`}
-                href={withDocsSpace(child.url, docsSpace)}
-                key={child.url ?? child.title}
-              >
-                {child.title}
-              </Link>
-            ))}
-          </div>
-        ) : (
+    <div className="docs-nav-tree">
+      {items.map((item, index) => {
+        if (item.type === "separator") {
+          return (
+            <p className="docs-nav-separator" key={`${item.title}-${index}`}>
+              {item.title}
+            </p>
+          );
+        }
+
+        if (item.children) {
+          const active = hasActiveChild(item, pathname, docsSpace);
+          const content = (
+            <NavLinks docsSpaces={docsSpaces} items={item.children} />
+          );
+
+          if (item.collapsible === false) {
+            return (
+              <div className="docs-nav-group" key={`${item.title}-${index}`}>
+                <p className="docs-nav-title">{item.title}</p>
+                {content}
+              </div>
+            );
+          }
+
+          return (
+            <details
+              className="docs-nav-folder"
+              key={`${item.title}-${index}`}
+              open={item.defaultOpen || active}
+            >
+              <summary>
+                {item.title}
+                <ChevronDown aria-hidden="true" size={14} />
+              </summary>
+              {content}
+            </details>
+          );
+        }
+
+        const external = item.external || item.url?.startsWith("http");
+        const href = external ? item.url : withDocsSpace(item.url, docsSpace);
+
+        return (
           <Link
             className={`docs-nav-link ${isActiveDocUrl(pathname, item.url, docsSpace) ? "docs-nav-link--active" : ""}`}
-            href={withDocsSpace(item.url, docsSpace)}
-            key={item.url ?? item.title}
+            href={href ?? docsSpace}
+            key={`${item.title}-${item.url ?? index}`}
+            rel={external ? "noreferrer" : undefined}
+            target={external ? "_blank" : undefined}
           >
             {item.title}
           </Link>
-        ),
-      )}
+        );
+      })}
     </div>
   );
 }

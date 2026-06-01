@@ -5,5 +5,9 @@
     "icon": "layers",
     "title": "Kanari Docs Installation"
   },
-  "pages": ["index"]
+  "pages": [
+    "index",
+    "---Resources---",
+    "external:[Kanari GitHub](https://github.com/kanari-network/kanari-sdk)"
+  ]
 }

@@ -51,16 +51,12 @@ button {
   overflow: clip;
   position: relative;
   background:
-    radial-gradient(
-      circle at 18% 7%,
+    radial-gradient(circle at 18% 7%,
       rgba(200, 244, 61, 0.32),
-      transparent 28rem
-    ),
-    radial-gradient(
-      circle at 82% 10%,
+      transparent 28rem),
+    radial-gradient(circle at 82% 10%,
       rgba(202, 189, 255, 0.36),
-      transparent 30rem
-    ),
+      transparent 30rem),
     var(--cream);
 }
 
@@ -70,10 +66,8 @@ button {
   z-index: 20;
   pointer-events: none;
   opacity: 0.2;
-  background-image: radial-gradient(
-    rgba(17, 27, 24, 0.16) 0.65px,
-    transparent 0.65px
-  );
+  background-image: radial-gradient(rgba(17, 27, 24, 0.16) 0.65px,
+      transparent 0.65px);
   background-size: 5px 5px;
   mix-blend-mode: multiply;
 }
@@ -539,16 +533,12 @@ button {
   border-radius: 50%;
   isolation: isolate;
   background:
-    radial-gradient(
-      circle at 50% 50%,
+    radial-gradient(circle at 50% 50%,
       rgba(255, 253, 247, 0.2) 0 17%,
-      transparent 17.5%
-    ),
-    radial-gradient(
-      circle at 34% 24%,
+      transparent 17.5%),
+    radial-gradient(circle at 34% 24%,
       rgba(255, 255, 255, 0.32),
-      transparent 19rem
-    ),
+      transparent 19rem),
     linear-gradient(135deg, #d8cffd 0%, #bdaeff 62%, #d9d2ff 100%);
   box-shadow:
     inset 0 0 0 1px rgba(17, 27, 24, 0.12),
@@ -564,10 +554,8 @@ button {
   z-index: 1;
   border-radius: inherit;
   opacity: 0.23;
-  background-image: radial-gradient(
-    rgba(17, 27, 24, 0.38) 0.55px,
-    transparent 0.65px
-  );
+  background-image: radial-gradient(rgba(17, 27, 24, 0.38) 0.55px,
+      transparent 0.65px);
   background-size: 7px 7px;
   mix-blend-mode: multiply;
   pointer-events: none;
@@ -579,12 +567,10 @@ button {
   inset: -4%;
   z-index: -1;
   border-radius: inherit;
-  background: conic-gradient(
-    from 190deg,
-    transparent 0 62%,
-    rgba(255, 253, 247, 0.78) 66% 82%,
-    transparent 88%
-  );
+  background: conic-gradient(from 190deg,
+      transparent 0 62%,
+      rgba(255, 253, 247, 0.78) 66% 82%,
+      transparent 88%);
   filter: blur(0.2px);
 }
 
@@ -782,6 +768,7 @@ button {
 }
 
 @keyframes network-core-pulse {
+
   0%,
   100% {
     transform: scale(1);
@@ -793,6 +780,7 @@ button {
 }
 
 @keyframes sticker-float-top {
+
   0%,
   100% {
     margin-top: 0;
@@ -804,6 +792,7 @@ button {
 }
 
 @keyframes sticker-float-bottom {
+
   0%,
   100% {
     margin-bottom: 0;
@@ -978,7 +967,7 @@ button {
   display: none;
 }
 
-.docs-switcher summary > svg:last-child {
+.docs-switcher summary>svg:last-child {
   margin-left: auto;
 }
 
@@ -1022,13 +1011,60 @@ button {
   background: rgba(200, 244, 61, 0.18);
 }
 
-.docs-switcher__link > svg:last-child {
+.docs-switcher__link>svg:last-child {
   margin-left: auto;
   color: var(--purple-strong);
 }
 
 .docs-nav-group {
   margin-bottom: 22px;
+}
+
+.docs-nav-tree {
+  display: grid;
+  gap: 3px;
+}
+
+.docs-nav-tree .docs-nav-tree {
+  margin: 3px 0 6px 8px;
+  padding-left: 8px;
+  border-left: 1px solid var(--line);
+}
+
+.docs-nav-folder summary {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-radius: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+  list-style: none;
+}
+
+.docs-nav-folder summary::-webkit-details-marker {
+  display: none;
+}
+
+.docs-nav-folder summary:hover {
+  color: var(--ink);
+  background: rgba(200, 244, 61, 0.12);
+}
+
+.docs-nav-folder[open]>summary svg {
+  transform: rotate(180deg);
+}
+
+.docs-nav-separator {
+  margin: 15px 0 5px;
+  color: var(--purple-strong);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .docs-nav-title {
@@ -1290,7 +1326,7 @@ button {
   overflow-wrap: anywhere;
 }
 
-.docs-prose > *:first-child {
+.docs-prose>*:first-child {
   margin-top: 0;
 }
 
@@ -1597,8 +1633,7 @@ button {
   border-color: rgba(255, 255, 255, 0.14);
 }
 
-.dark
-  .resource-card:not(.resource-card--purple):not(.resource-card--dark):hover {
+.dark .resource-card:not(.resource-card--purple):not(.resource-card--dark):hover {
   background: rgba(255, 255, 255, 0.085);
 }
 
@@ -1626,7 +1661,7 @@ button {
   background: rgba(200, 244, 61, 0.08);
 }
 
-.dark .docs-switcher__link > svg:last-child {
+.dark .docs-switcher__link>svg:last-child {
   color: var(--lime);
 }
 
@@ -1673,6 +1708,19 @@ button {
   background: rgba(200, 244, 61, 0.08);
 }
 
+.dark .docs-nav-tree .docs-nav-tree {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.dark .docs-nav-folder summary {
+  color: rgba(247, 244, 235, 0.64);
+}
+
+.dark .docs-nav-folder summary:hover {
+  color: #f7f4eb;
+  background: rgba(200, 244, 61, 0.08);
+}
+
 .dark .docs-nav-link--active:hover {
   color: #111b18;
   background: var(--lime);
@@ -1710,17 +1758,12 @@ button {
   color: rgba(247, 244, 235, 0.64);
 }
 
-.dark
-  .docs-capabilities
-  .resource-card:not(.resource-card--purple):not(.resource-card--dark) {
+.dark .docs-capabilities .resource-card:not(.resource-card--purple):not(.resource-card--dark) {
   color: #f7f4eb;
   background: rgba(255, 255, 255, 0.045);
 }
 
-.dark
-  .docs-capabilities
-  .resource-card:not(.resource-card--purple):not(.resource-card--dark)
-  p {
+.dark .docs-capabilities .resource-card:not(.resource-card--purple):not(.resource-card--dark) p {
   color: rgba(247, 244, 235, 0.64);
 }
 
@@ -1860,6 +1903,7 @@ button {
 }
 
 @media (max-width: 980px) {
+
   .section-wrap,
   .site-header {
     width: min(calc(100% - 30px), 680px);
@@ -1981,6 +2025,7 @@ button {
 }
 
 @media (max-width: 540px) {
+
   .section-wrap,
   .site-header {
     width: calc(100% - 24px);
@@ -2098,7 +2143,7 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .docs-pagination > span {
+  .docs-pagination>span {
     display: none;
   }
 

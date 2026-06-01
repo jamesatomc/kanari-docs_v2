@@ -15,7 +15,11 @@ export interface DocPage {
 }
 
 export interface NavItem {
+  collapsible?: boolean;
+  defaultOpen?: boolean;
+  external?: boolean;
   title: string;
+  type?: "folder" | "link" | "page" | "separator";
   url?: string;
   children?: NavItem[];
 }
@@ -149,11 +153,70 @@ function walkMdx(dir: string): string[] {
   return files;
 }
 
-function readMeta(dir: string): { title?: string; pages?: string[] } {
+interface DocsMeta {
+  collapsible?: boolean;
+  defaultOpen?: boolean;
+  pages?: string[];
+  title?: string;
+}
+
+function readMeta(dir: string): DocsMeta {
   const file = path.join(dir, "meta.json");
   if (!fs.existsSync(file)) return {};
 
   return JSON.parse(fs.readFileSync(file, "utf8"));
+}
+
+function getDirEntries(dir: string) {
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.name !== "meta.json")
+    .map((entry) => entry.name.replace(/\.mdx$/, ""))
+    .sort((a, b) => a.localeCompare(b));
+}
+
+function expandMetaPages(dir: string, pages?: string[]) {
+  const entries = getDirEntries(dir);
+  if (!pages) return entries;
+
+  const excluded = new Set(
+    pages
+      .filter((entry) => entry.startsWith("!"))
+      .map((entry) => entry.slice(1)),
+  );
+  const explicit = new Set(
+    pages
+      .filter((entry) => !entry.startsWith("!"))
+      .filter((entry) => entry !== "..."),
+  );
+  const remaining = entries.filter(
+    (entry) => !excluded.has(entry) && !explicit.has(entry),
+  );
+
+  return pages.flatMap((entry) => {
+    if (entry === "...") return remaining;
+    if (entry.startsWith("!")) return [];
+    return [entry];
+  });
+}
+
+function metaNavItem(entry: string): NavItem | null {
+  const separator = entry.match(/^---(.+)---$/);
+  if (separator) {
+    return { title: separator[1], type: "separator" };
+  }
+
+  const link = entry.match(/^(external:)?\[([^\]]+)\]\(([^)]+)\)$/);
+  if (link) {
+    return {
+      external: Boolean(link[1]),
+      title: link[2],
+      type: "link",
+      url: link[3],
+    };
+  }
+
+  return null;
 }
 
 function navForDir(
@@ -163,23 +226,27 @@ function navForDir(
   baseSlugs: string[] = [],
 ): NavItem[] {
   const meta = readMeta(dir);
-  const entries =
-    meta.pages ??
-    fs
-      .readdirSync(dir, { withFileTypes: true })
-      .filter((entry) => entry.name !== "meta.json")
-      .map((entry) => entry.name.replace(/\.mdx$/, ""));
+  const entries = expandMetaPages(dir, meta.pages);
 
   const items: NavItem[] = [];
 
   for (const entry of entries) {
+    const configuredItem = metaNavItem(entry);
+    if (configuredItem) {
+      items.push(configuredItem);
+      continue;
+    }
+
     const childDir = path.join(dir, entry);
     const file = path.join(dir, `${entry}.mdx`);
 
     if (fs.existsSync(childDir) && fs.statSync(childDir).isDirectory()) {
       const childMeta = readMeta(childDir);
       items.push({
+        collapsible: childMeta.collapsible,
+        defaultOpen: childMeta.defaultOpen,
         title: childMeta.title ?? titleFromSlug(entry),
+        type: "folder",
         children: navForDir(docsRoot, href, childDir, [...baseSlugs, entry]),
       });
       continue;
@@ -190,6 +257,7 @@ function navForDir(
 
     items.push({
       title: page.title,
+      type: "page",
       url: page.url,
     });
   }
@@ -234,7 +302,11 @@ export function getDocNav(docsSpace = "docs") {
 
 function flattenNav(items: NavItem[]): string[] {
   return items.flatMap((item) =>
-    item.children ? flattenNav(item.children) : item.url ? [item.url] : [],
+    item.children
+      ? flattenNav(item.children)
+      : item.type === "page" && item.url
+        ? [item.url]
+        : [],
   );
 }
 

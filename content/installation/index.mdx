@@ -96,6 +96,39 @@ npm run build
 npm run start
 ```
 
+## Configure the Sidebar
+
+Use `pages` in `meta.json` to control the sidebar without changing TypeScript:
+
+```json
+{
+  "pages": [
+    "index",
+    "---Guides---",
+    "...",
+    "!draft",
+    "external:[GitHub](https://github.com/kanari-network/kanari-sdk)"
+  ]
+}
+```
+
+- `...` includes remaining pages and folders automatically.
+- `!draft` excludes a page or folder from the remaining items.
+- `---Guides---` adds a separator.
+- `[Label](url)` adds a link.
+- `external:[Label](url)` opens an external link in a new tab.
+
+Folder-level `meta.json` also supports collapsible sidebar groups:
+
+```json
+{
+  "title": "Guides",
+  "collapsible": true,
+  "defaultOpen": true,
+  "pages": ["...", "!draft"]
+}
+```
+
 ## Next Steps
 
 - Add `.mdx` articles to your content folder.
