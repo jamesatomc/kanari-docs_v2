@@ -50,6 +50,7 @@ export function DocsSearch({ docsSpaces }: { docsSpaces: DocsSpace[] }) {
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    document.body.classList.add("search-open");
     inputRef.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") closeSearch();
@@ -58,6 +59,7 @@ export function DocsSearch({ docsSpaces }: { docsSpaces: DocsSpace[] }) {
     window.addEventListener("keydown", onKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
+      document.body.classList.remove("search-open");
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [open, closeSearch]);

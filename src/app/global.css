@@ -229,7 +229,6 @@ button {
   align-items: center;
   justify-content: center;
   background: color-mix(in srgb, var(--deep-green) 68%, transparent);
-  backdrop-filter: blur(9px);
 }
 
 .search-overlay__backdrop {
@@ -238,6 +237,14 @@ button {
   border: 0;
   background: transparent;
   cursor: default;
+}
+
+.search-open .site-header,
+.search-open .docs-sidebar,
+.search-open .docs-hero-card,
+.search-open .docs-content-card,
+.search-open .mobile-doc-nav {
+  backdrop-filter: none;
 }
 
 .search-dialog {
