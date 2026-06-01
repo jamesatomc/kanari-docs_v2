@@ -97,8 +97,10 @@ button {
   z-index: 20;
   pointer-events: none;
   opacity: 0.22;
-  background-image: radial-gradient(color-mix(in srgb, var(--ink) 16%, transparent) 0.65px,
-      transparent 0.65px);
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--ink) 16%, transparent) 0.65px,
+    transparent 0.65px
+  );
   background-size: 5px 5px;
   mix-blend-mode: multiply;
 }
@@ -575,7 +577,8 @@ button {
   position: relative;
   display: grid;
   place-items: center;
-  transform: translate3d(0, calc(var(--hero-progress) * 54px), 0) rotateX(calc(var(--hero-progress) * 5deg));
+  transform: translate3d(0, calc(var(--hero-progress) * 54px), 0)
+    rotateX(calc(var(--hero-progress) * 5deg));
   transition: transform 0.08s linear;
 }
 
@@ -691,7 +694,9 @@ button {
   width: 72%;
   height: 72%;
   border-radius: 50%;
-  filter: drop-shadow(0 10px 16px color-mix(in srgb, var(--deep-green) 16%, transparent));
+  filter: drop-shadow(
+    0 10px 16px color-mix(in srgb, var(--deep-green) 16%, transparent)
+  );
 }
 
 .network-node {
@@ -807,7 +812,6 @@ button {
 }
 
 @keyframes network-core-pulse {
-
   0%,
   100% {
     transform: scale(1);
@@ -819,7 +823,6 @@ button {
 }
 
 @keyframes sticker-float-top {
-
   0%,
   100% {
     margin-top: 0;
@@ -831,7 +834,6 @@ button {
 }
 
 @keyframes sticker-float-bottom {
-
   0%,
   100% {
     margin-bottom: 0;
@@ -1006,7 +1008,7 @@ button {
   display: none;
 }
 
-.docs-switcher summary>svg:last-child {
+.docs-switcher summary > svg:last-child {
   margin-left: auto;
 }
 
@@ -1050,7 +1052,7 @@ button {
   background: color-mix(in srgb, var(--lime) 18%, transparent);
 }
 
-.docs-switcher__link>svg:last-child {
+.docs-switcher__link > svg:last-child {
   margin-left: auto;
   color: var(--purple-strong);
 }
@@ -1093,7 +1095,7 @@ button {
   background: color-mix(in srgb, var(--lime) 12%, transparent);
 }
 
-.docs-nav-folder[open]>summary svg {
+.docs-nav-folder[open] > summary svg {
   transform: rotate(180deg);
 }
 
@@ -1365,7 +1367,7 @@ button {
   overflow-wrap: anywhere;
 }
 
-.docs-prose>*:first-child {
+.docs-prose > *:first-child {
   margin-top: 0;
 }
 
@@ -1770,7 +1772,8 @@ button {
   border-color: var(--line);
 }
 
-.dark .resource-card:not(.resource-card--purple):not(.resource-card--dark):hover {
+.dark
+  .resource-card:not(.resource-card--purple):not(.resource-card--dark):hover {
   background: color-mix(in srgb, var(--ink) 8.5%, transparent);
 }
 
@@ -1798,7 +1801,7 @@ button {
   background: color-mix(in srgb, var(--lime) 8%, transparent);
 }
 
-.dark .docs-switcher__link>svg:last-child {
+.dark .docs-switcher__link > svg:last-child {
   color: var(--lime);
 }
 
@@ -1895,12 +1898,17 @@ button {
   color: var(--muted);
 }
 
-.dark .docs-capabilities .resource-card:not(.resource-card--purple):not(.resource-card--dark) {
+.dark
+  .docs-capabilities
+  .resource-card:not(.resource-card--purple):not(.resource-card--dark) {
   color: var(--ink);
   background: color-mix(in srgb, var(--ink) 4.5%, transparent);
 }
 
-.dark .docs-capabilities .resource-card:not(.resource-card--purple):not(.resource-card--dark) p {
+.dark
+  .docs-capabilities
+  .resource-card:not(.resource-card--purple):not(.resource-card--dark)
+  p {
   color: var(--muted);
 }
 
@@ -2040,7 +2048,6 @@ button {
 }
 
 @media (max-width: 980px) {
-
   .section-wrap,
   .site-header {
     width: min(calc(100% - 30px), 680px);
@@ -2162,7 +2169,6 @@ button {
 }
 
 @media (max-width: 540px) {
-
   .section-wrap,
   .site-header {
     width: calc(100% - 24px);
@@ -2280,7 +2286,7 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .docs-pagination>span {
+  .docs-pagination > span {
     display: none;
   }
 
