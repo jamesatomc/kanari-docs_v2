@@ -44,12 +44,14 @@ export default async function Page({ params }: DocsPageProps) {
           {page.description ? (
             <p className="docs-description">{page.description}</p>
           ) : null}
-          <p className="docs-updated">
-            Last updated{" "}
-            <time dateTime={page.updatedAt}>
-              {formatDocUpdatedAt(page.updatedAt)}
-            </time>
-          </p>
+          {page.updatedAt ? (
+            <p className="docs-updated">
+              Last updated{" "}
+              <time dateTime={page.updatedAt}>
+                {formatDocUpdatedAt(page.updatedAt)}
+              </time>
+            </p>
+          ) : null}
         </div>
         <div className="docs-content-card">
           <MarkdownRenderer content={page.content} />

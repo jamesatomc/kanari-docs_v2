@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { getDocsSpaces } from "@/lib/docs-spaces";
@@ -11,7 +12,7 @@ export interface DocPage {
   raw: string;
   path: string;
   slugs: string[];
-  updatedAt: string;
+  updatedAt?: string;
   url: string;
 }
 
@@ -121,7 +122,21 @@ function getUpdatedAt(filePath: string, configuredDate?: string) {
     if (!Number.isNaN(date.getTime())) return date.toISOString();
   }
 
-  return fs.statSync(filePath).mtime.toISOString();
+  try {
+    const updatedAt = execFileSync(
+      "git",
+      ["log", "-1", "--format=%cI", "--", filePath],
+      {
+        cwd: process.cwd(),
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      },
+    ).trim();
+
+    if (updatedAt) return new Date(updatedAt).toISOString();
+  } catch {
+    return undefined;
+  }
 }
 
 function readDoc(
