@@ -181,9 +181,9 @@ button {
 .site-nav a,
 .site-footer a {
   color: var(--ink);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -195,7 +195,7 @@ button {
 .site-header__actions {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 8px;
 }
 
 .icon-button {
@@ -406,7 +406,7 @@ button {
 .theme-toggle {
   width: 42px;
   height: 42px;
-  margin-right: 8px;
+  margin-right: 0;
   display: grid;
   flex: 0 0 auto;
   place-items: center;
@@ -461,9 +461,9 @@ button {
   justify-content: center;
   gap: 12px;
   border-radius: 30px;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 0.06em;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   transition:
     transform 0.25s ease,
@@ -1760,6 +1760,10 @@ button {
 .dark .resource-card:not(.resource-card--purple):not(.resource-card--dark) {
   border-color: var(--line);
   background: color-mix(in srgb, var(--ink) 4.5%, transparent);
+}
+
+.dark .site-header {
+  background: color-mix(in srgb, var(--paper) 78%, transparent);
 }
 
 .dark .resource-card {
