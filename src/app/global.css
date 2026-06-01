@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "fumadocs-ui/style.css";
 
 .dark {
   color-scheme: dark;
@@ -1302,6 +1303,7 @@ button {
 }
 
 .docs-toc {
+  --color-fd-primary: var(--lime);
   position: sticky;
   top: 116px;
   align-self: start;
@@ -1319,58 +1321,27 @@ button {
   letter-spacing: 0;
 }
 
-.docs-toc nav {
-  position: relative;
-  display: grid;
-  margin-left: 13px;
+.docs-toc__scroll {
+  max-height: calc(100vh - 190px);
 }
 
-.docs-toc__link {
-  min-height: 38px;
-  padding: 7px 0 7px 17px;
-  position: relative;
+.docs-toc__items a {
   color: color-mix(in srgb, var(--ink) 58%, transparent);
   font-size: 16px;
   font-weight: 500;
   line-height: 1.45;
-  transition: color 0.2s ease;
 }
 
-.docs-toc__rail {
-  position: absolute;
-  top: 0;
-  left: -4px;
-  overflow: visible;
-  pointer-events: none;
+.docs-toc__items a > div {
+  background: color-mix(in srgb, var(--ink) 18%, transparent);
 }
 
-.docs-toc__rail-base,
-.docs-toc__rail-active {
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.docs-toc__rail-base {
+.docs-toc__items a > svg line {
   stroke: color-mix(in srgb, var(--ink) 18%, transparent);
-  stroke-width: 2px;
 }
 
-.docs-toc__rail-active {
-  stroke: var(--lime);
-  stroke-width: 2px;
-}
-
-.docs-toc__rail-marker {
-  fill: var(--lime);
-}
-
-.docs-toc__link--level-3 {
-  padding-left: 42px;
-}
-
-.docs-toc__link:hover,
-.docs-toc__link--active {
+.docs-toc__items a:hover,
+.docs-toc__items a[data-active="true"] {
   color: var(--lime);
 }
 
@@ -1841,17 +1812,16 @@ button {
   color: color-mix(in srgb, var(--ink) 66%, transparent);
 }
 
-.dark .docs-toc__link {
+.dark .docs-toc__items a {
   color: color-mix(in srgb, var(--ink) 58%, transparent);
 }
 
-.dark .docs-toc__rail-base {
-  stroke: color-mix(in srgb, var(--ink) 20%, transparent);
+.dark .docs-toc__items a > div {
+  background: color-mix(in srgb, var(--ink) 20%, transparent);
 }
 
-.dark .docs-toc__link:hover,
-.dark .docs-toc__link--active {
-  color: var(--lime);
+.dark .docs-toc__items a > svg line {
+  stroke: color-mix(in srgb, var(--ink) 20%, transparent);
 }
 
 .dark .docs-nav-link--active {
