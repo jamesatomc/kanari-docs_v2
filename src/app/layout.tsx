@@ -1,6 +1,5 @@
 import "./global.css";
 import type { Metadata } from "next";
-import Script from "next/script";
 import { getSiteTheme } from "@/lib/theme";
 import { themeStyle } from "@/lib/theme-style";
 
@@ -29,14 +28,15 @@ export default function Layout({ children }: LayoutProps<"/">) {
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d)}catch(e){}`,
+          }}
+        />
+      </head>
       <body style={themeVariables}>
-        <Script id="theme-mode" strategy="beforeInteractive">
-          {`(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d);}catch(e){}})();`}
-        </Script>
-        <main className="site-shell">
-          <div className="site-noise" />
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );

@@ -186,7 +186,7 @@ export function SiteHeader({ docsSpaces }: { docsSpaces: DocsSpace[] }) {
       >
         <Link className="brand" href="/" aria-label="Kanari Docs home">
           <Image src="/kariicon1.png" alt="" width={42} height={42} priority />
-          <span>kanari</span>
+          <span>KANARI</span>
           <small>docs</small>
         </Link>
 
@@ -257,16 +257,19 @@ export function DocsShell({
   theme?: DocsSpaceTheme;
 }) {
   return (
-    <div className="docs-space-theme" style={themeStyle(theme)}>
-      <SiteHeader docsSpaces={docsSpaces} />
-      <div className="docs-layout section-wrap">
-        <aside className="docs-sidebar">
-          <DocsSwitcher docsSpaces={docsSpaces} />
-          <NavLinks docsSpaces={docsSpaces} items={nav} />
-        </aside>
-        {children}
+    <div className="site-shell">
+      <div className="site-noise" />
+      <div className="docs-space-theme" style={themeStyle(theme)}>
+        <SiteHeader docsSpaces={docsSpaces} />
+        <div className="docs-layout section-wrap">
+          <aside className="docs-sidebar">
+            <DocsSwitcher docsSpaces={docsSpaces} />
+            <NavLinks docsSpaces={docsSpaces} items={nav} />
+          </aside>
+          {children}
+        </div>
+        <SiteFooter />
       </div>
-      <SiteFooter />
     </div>
   );
 }
@@ -294,17 +297,19 @@ export function SiteFooter() {
     <footer className="site-footer section-wrap">
       <Link className="brand" href="/">
         <Image src="/kariicon1.png" alt="" width={36} height={36} />
-        <span>kanari</span>
+        <span>KANARI</span>
       </Link>
-      <p>Developer documentation for verifiable metadata infrastructure.</p>
+      <p>Community-powered infrastructure for digital ownership.</p>
       <div>
-        <a href="https://kanarinetwork.site/">Network</a>
-        <a href="https://blog.kanarinetwork.site/">Articles</a>
-        <Link href="/docs">Docs</Link>
-        <Link href="/docs/introduction/getting-started">Quick start</Link>
-        <Link href="/docs/api/api-reference">API</Link>
         <a href="https://kanarinetwork.site/DeveloperPortal">Developers</a>
+        <a href="https://kanarinetwork.site/connect/ecosystem">Ecosystem</a>
+        <a href="https://kanarinetwork.site/connect/community">Community</a>
+        <a href="https://kanarinetwork.site/KanariFoundation">Foundation</a>
+        <a href="https://kanarinetwork.site/MediaKit">Media kit</a>
+        <a href="https://kanarinetwork.site/Team">Team</a>
         <a href="https://github.com/kanari-network">GitHub</a>
+        <Link href="/docs">Docs</Link>
+        <a href="https://kanarinetwork.site/PrivacyPolicy">Privacy</a>
       </div>
     </footer>
   );

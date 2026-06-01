@@ -29,7 +29,6 @@ body {
   --muted: var(--light-muted);
   --on-accent: var(--light-on-accent);
   --section-surface: var(--light-section-surface);
-  --site-shell-background: var(--light-site-shell-background);
   --network-graphic-background: var(--light-network-graphic-background);
   --network-graphic-shadow: var(--light-network-graphic-shadow);
   --network-graphic-pattern: var(--light-network-graphic-pattern);
@@ -55,6 +54,8 @@ body {
   --hero-sticker-background: var(--light-hero-sticker-background);
   --hero-sticker-shadow: var(--light-hero-sticker-shadow);
   --hero-sticker-accent-background: var(--light-hero-sticker-accent-background);
+  --chrome-surface: color-mix(in srgb, var(--paper) 80%, transparent);
+  --noise-dot: color-mix(in srgb, var(--ink) 16%, transparent);
   margin: 0;
   color: var(--ink);
   background: var(--cream);
@@ -89,7 +90,8 @@ button {
   min-height: 100vh;
   overflow-x: clip;
   position: relative;
-  background: var(--site-shell-background);
+  color: var(--ink);
+  background: var(--cream);
 }
 
 .site-noise {
@@ -99,7 +101,7 @@ button {
   pointer-events: none;
   opacity: 0.22;
   background-image: radial-gradient(
-    color-mix(in srgb, var(--ink) 16%, transparent) 0.65px,
+    var(--noise-dot) 0.65px,
     transparent 0.65px
   );
   background-size: 5px 5px;
@@ -126,7 +128,7 @@ button {
   top: 18px;
   right: 0;
   left: 0;
-  background: color-mix(in srgb, var(--paper) 80%, transparent);
+  background: var(--chrome-surface);
   backdrop-filter: blur(18px);
   transition:
     transform 0.3s ease,
@@ -134,7 +136,7 @@ button {
 }
 
 .dark .site-header {
-  background: color-mix(in srgb, var(--paper) 80%, transparent);
+  background: var(--chrome-surface);
 }
 
 .site-header--hidden {
@@ -153,7 +155,7 @@ button {
   gap: 9px;
   color: var(--ink);
   font-size: 23px;
-  font-weight: 900;
+  font-weight: 950;
   letter-spacing: -0.08em;
   text-transform: uppercase;
 }
@@ -432,18 +434,6 @@ button {
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.8;
-}
-
-.sun-icon {
-  display: none;
-}
-
-.dark .moon-icon {
-  display: none;
-}
-
-.dark .sun-icon {
-  display: block;
 }
 
 .dark .theme-toggle:hover {
@@ -1671,7 +1661,7 @@ button {
   min-height: 138px;
   padding-block: 22px;
   display: grid;
-  grid-template-columns: 0.8fr 1fr 1.7fr;
+  grid-template-columns: auto minmax(210px, 0.8fr) minmax(0, 2fr);
   gap: 25px;
   align-items: center;
 }
@@ -1704,7 +1694,6 @@ button {
   --muted: var(--dark-muted);
   --on-accent: var(--dark-on-accent);
   --section-surface: var(--dark-section-surface);
-  --site-shell-background: var(--dark-site-shell-background);
   --network-graphic-background: var(--dark-network-graphic-background);
   --network-graphic-shadow: var(--dark-network-graphic-shadow);
   --network-graphic-pattern: var(--dark-network-graphic-pattern);
@@ -1732,16 +1721,6 @@ button {
   --hero-sticker-accent-background: var(--dark-hero-sticker-accent-background);
 }
 
-.dark body {
-  color: var(--ink);
-  background: var(--cream);
-}
-
-.dark .site-shell {
-  color: var(--ink);
-  background: var(--site-shell-background);
-}
-
 .dark .site-noise {
   opacity: 0.11;
   mix-blend-mode: screen;
@@ -1767,7 +1746,7 @@ button {
 }
 
 .dark .site-header {
-  background: color-mix(in srgb, var(--paper) 78%, transparent);
+  background: var(--chrome-surface);
 }
 
 .dark .resource-card {
@@ -2358,5 +2337,100 @@ button {
     transition-duration: 0.01ms;
     animation-duration: 0.01ms;
     animation-iteration-count: 1;
+  }
+}
+
+.not-found-page {
+  min-height: calc(100vh - 232px);
+  padding: 72px 0;
+  display: grid;
+  align-items: center;
+}
+
+.not-found-card {
+  min-height: 500px;
+  padding: 56px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 34px;
+  color: var(--inverted-text);
+  background: var(--deep-green);
+  box-shadow: 0 28px 80px color-mix(in srgb, var(--deep-green) 18%, transparent);
+}
+
+.not-found-card .section-kicker {
+  position: relative;
+  z-index: 1;
+  color: var(--lime);
+}
+
+.not-found-card h1 {
+  max-width: 800px;
+  margin: 0 0 22px;
+  position: relative;
+  z-index: 1;
+  font-size: clamp(68px, 8vw, 118px);
+  font-weight: 950;
+  letter-spacing: -0.1em;
+  line-height: 0.9;
+}
+
+.not-found-card h1 span {
+  color: var(--purple);
+}
+
+.not-found-card > p:not(.section-kicker) {
+  max-width: 620px;
+  margin: 0 0 28px;
+  position: relative;
+  z-index: 1;
+  color: color-mix(in srgb, var(--inverted-text) 66%, transparent);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.not-found-card .hero-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.not-found-card .button--ghost {
+  border-color: color-mix(in srgb, var(--inverted-text) 22%, transparent);
+  color: var(--inverted-text);
+  background: color-mix(in srgb, var(--inverted-text) 6%, transparent);
+}
+
+.not-found-card i {
+  width: 440px;
+  height: 440px;
+  position: absolute;
+  right: -80px;
+  bottom: -210px;
+  border: 1px solid color-mix(in srgb, var(--inverted-text) 18%, transparent);
+  border-radius: 50%;
+  background: var(--purple);
+}
+
+@media (max-width: 540px) {
+  .not-found-page {
+    min-height: calc(100vh - 210px);
+    padding: 42px 0;
+  }
+
+  .not-found-card {
+    min-height: 440px;
+    padding: 34px 24px;
+  }
+
+  .not-found-card h1 {
+    font-size: clamp(58px, 16vw, 82px);
+  }
+
+  .not-found-card > p:not(.section-kicker) {
+    font-size: 15px;
+  }
+
+  .not-found-card i {
+    right: -190px;
   }
 }

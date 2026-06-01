@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DocsToc } from "@/components/docs-toc";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
-import { MobileDocNav } from "@/components/site-chrome";
+import { DocsShell, MobileDocNav } from "@/components/site-chrome";
 import { getDocsSpaces } from "@/lib/docs-spaces";
 import {
   formatDocUpdatedAt,
@@ -30,6 +30,11 @@ export default async function Page({ params }: DocsPageProps) {
   if (!isDocsSpace(docsSpace)) notFound();
 
   const docsSpaces = getDocsSpaces();
+  const currentSpace = docsSpaces.find(
+    (space) => space.href === `/${docsSpace}`,
+  );
+  if (!currentSpace) notFound();
+
   const page = getDocPage(slug, docsSpace);
   if (!page) notFound();
   const { previous, next } = getAdjacentDocPages(page, docsSpace);
@@ -37,7 +42,11 @@ export default async function Page({ params }: DocsPageProps) {
   const updatedAt = await resolveDocUpdatedAt(page);
 
   return (
-    <>
+    <DocsShell
+      docsSpaces={docsSpaces}
+      nav={getDocNav(docsSpace)}
+      theme={currentSpace.theme}
+    >
       <article className="docs-article">
         <MobileDocNav docsSpaces={docsSpaces} nav={getDocNav(docsSpace)} />
         <div className="docs-hero-card">
@@ -81,7 +90,7 @@ export default async function Page({ params }: DocsPageProps) {
         </nav>
       </article>
       <DocsToc items={toc} />
-    </>
+    </DocsShell>
   );
 }
 

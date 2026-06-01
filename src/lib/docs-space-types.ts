@@ -52,7 +52,6 @@ export interface DocsSpaceTheme {
   paper?: string;
   secondary?: string;
   sectionSurface?: string;
-  siteShellBackground?: string;
 }
 
 export interface SiteTheme {

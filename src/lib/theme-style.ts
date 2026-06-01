@@ -13,7 +13,6 @@ const themeVariables: Record<string, readonly (keyof DocsSpaceTheme)[]> = {
   "--purple": ["secondary", "purple"],
   "--purple-strong": ["accentStrong", "purpleStrong"],
   "--section-surface": ["sectionSurface"],
-  "--site-shell-background": ["siteShellBackground"],
   "--inverted-text": ["invertedText", "warmWhite"],
   "--warm-white": ["invertedText", "warmWhite"],
   "--network-graphic-background": ["networkGraphicBackground"],

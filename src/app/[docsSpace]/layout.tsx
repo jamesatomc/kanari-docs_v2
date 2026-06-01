@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
-import { DocsShell } from "@/components/site-chrome";
 import { getDocsSpaces } from "@/lib/docs-spaces";
-import { getDocNav } from "@/lib/source";
 
 export default async function Layout({
   children,
@@ -17,13 +15,5 @@ export default async function Layout({
   );
   if (!currentSpace) notFound();
 
-  return (
-    <DocsShell
-      docsSpaces={docsSpaces}
-      nav={getDocNav(docsSpace)}
-      theme={currentSpace.theme}
-    >
-      {children}
-    </DocsShell>
-  );
+  return children;
 }
