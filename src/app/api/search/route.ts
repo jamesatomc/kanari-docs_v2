@@ -89,7 +89,10 @@ function entriesFor(page: DocPage): SearchEntry[] {
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const query = url.searchParams.get("q")?.toLowerCase().trim() ?? "";
+  const query =
+    url.searchParams.get("q")?.toLowerCase().trim().slice(0, 120) ?? "";
+  if (!query) return Response.json([]);
+
   const activeSpace = url.searchParams.get("space") ?? "all";
   const allDocsSpaces = getDocsSpaces();
   const spaces =
@@ -102,29 +105,31 @@ export async function GET(request: Request) {
   const results = pages
     .flatMap(entriesFor)
     .filter((entry) => {
-      if (!query) return false;
       return `${entry.title} ${entry.description} ${entry.excerpt}`
         .toLowerCase()
         .includes(query);
-    })
-    .filter((entry) => {
-      const key = `${entry.url}\n${entry.title}\n${entry.excerpt}`;
-      if (seen.has(key)) return false;
-
-      seen.add(key);
-      return true;
     })
     .sort((a, b) => {
       const aTitle = a.title.toLowerCase();
       const bTitle = b.title.toLowerCase();
       const aStartsWithQuery = aTitle.startsWith(query) ? 0 : 1;
       const bStartsWithQuery = bTitle.startsWith(query) ? 0 : 1;
+      const aHasExcerpt = a.excerpt ? 0 : 1;
+      const bHasExcerpt = b.excerpt ? 0 : 1;
 
       return (
         aStartsWithQuery - bStartsWithQuery ||
         aTitle.localeCompare(bTitle) ||
-        a.url.localeCompare(b.url)
+        a.url.localeCompare(b.url) ||
+        aHasExcerpt - bHasExcerpt
       );
+    })
+    .filter((entry) => {
+      const key = `${entry.url}\n${entry.title}`;
+      if (seen.has(key)) return false;
+
+      seen.add(key);
+      return true;
     })
     .slice(0, 48)
     .map((entry) => ({
