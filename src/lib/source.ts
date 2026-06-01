@@ -1,9 +1,13 @@
-import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { getDocsSpaces } from "@/lib/docs-spaces";
 
 const contentRoot = path.join(process.cwd(), "content");
+const defaultGithubRepository = {
+  owner: "jamesatomc",
+  repo: "kanari-docs_v2",
+};
+const updatedAtRequests = new Map<string, Promise<string | undefined>>();
 
 export interface DocPage {
   title: string;
@@ -11,6 +15,7 @@ export interface DocPage {
   content: string;
   raw: string;
   path: string;
+  sourcePath: string;
   slugs: string[];
   updatedAt?: string;
   url: string;
@@ -116,27 +121,71 @@ function slugsFromFile(docsRoot: string, filePath: string) {
   return withoutExt === "index" ? [] : withoutExt.split("/");
 }
 
-function getUpdatedAt(filePath: string, configuredDate?: string) {
+function getConfiguredUpdatedAt(configuredDate?: string) {
   if (configuredDate) {
     const date = new Date(configuredDate);
     if (!Number.isNaN(date.getTime())) return date.toISOString();
   }
+}
+
+interface GithubCommit {
+  commit?: {
+    author?: { date?: string };
+    committer?: { date?: string };
+  };
+}
+
+function getGithubRepository() {
+  return {
+    owner: process.env.VERCEL_GIT_REPO_OWNER ?? defaultGithubRepository.owner,
+    repo: process.env.VERCEL_GIT_REPO_SLUG ?? defaultGithubRepository.repo,
+  };
+}
+
+async function fetchGithubUpdatedAt(sourcePath: string) {
+  const { owner, repo } = getGithubRepository();
+  const sha = process.env.VERCEL_GIT_COMMIT_SHA;
+  const search = new URLSearchParams({ path: sourcePath, per_page: "1" });
+  if (sha) search.set("sha", sha);
 
   try {
-    const updatedAt = execFileSync(
-      "git",
-      ["log", "-1", "--format=%cI", "--", filePath],
+    const response = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/commits?${search}`,
       {
-        cwd: process.cwd(),
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "ignore"],
+        headers: {
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+        next: { revalidate: 3600 },
+        signal: AbortSignal.timeout(2500),
       },
-    ).trim();
+    );
+    if (!response.ok) return undefined;
 
-    if (updatedAt) return new Date(updatedAt).toISOString();
+    const commits = (await response.json()) as GithubCommit[];
+    const updatedAt =
+      commits[0]?.commit?.committer?.date ?? commits[0]?.commit?.author?.date;
+    if (!updatedAt) return undefined;
+
+    const date = new Date(updatedAt);
+    return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
   } catch {
     return undefined;
   }
+}
+
+export function resolveDocUpdatedAt(page: DocPage) {
+  if (page.updatedAt) return Promise.resolve(page.updatedAt);
+
+  const { owner, repo } = getGithubRepository();
+  const sha = process.env.VERCEL_GIT_COMMIT_SHA ?? "default";
+  const key = `${owner}/${repo}:${sha}:${page.sourcePath}`;
+  const pending = updatedAtRequests.get(key);
+  if (pending) return pending;
+
+  const request = fetchGithubUpdatedAt(page.sourcePath);
+  updatedAtRequests.set(key, request);
+  return request;
 }
 
 function readDoc(
@@ -148,7 +197,7 @@ function readDoc(
 
   const raw = fs.readFileSync(filePath, "utf8");
   const { data, content } = parseFrontmatter(raw);
-  const updatedAt = getUpdatedAt(filePath, data.updated);
+  const updatedAt = getConfiguredUpdatedAt(data.updated);
   const slugs = slugsFromFile(docsRoot, filePath);
   const fallbackTitle = slugs.length
     ? titleFromSlug(slugs.at(-1) ?? "Docs")
@@ -160,6 +209,7 @@ function readDoc(
     content,
     raw,
     path: path.relative(docsRoot, filePath).replace(/\\/g, "/"),
+    sourcePath: path.relative(process.cwd(), filePath).replace(/\\/g, "/"),
     slugs,
     updatedAt,
     url: `${href}${slugs.length ? `/${slugs.join("/")}` : ""}`,

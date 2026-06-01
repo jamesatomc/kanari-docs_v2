@@ -14,6 +14,7 @@ import {
   getDocPages,
   getDocToc,
   getPageImage,
+  resolveDocUpdatedAt,
 } from "@/lib/source";
 
 interface DocsPageProps {
@@ -33,6 +34,7 @@ export default async function Page({ params }: DocsPageProps) {
   if (!page) notFound();
   const { previous, next } = getAdjacentDocPages(page, docsSpace);
   const toc = getDocToc(page.content);
+  const updatedAt = await resolveDocUpdatedAt(page);
 
   return (
     <>
@@ -44,12 +46,10 @@ export default async function Page({ params }: DocsPageProps) {
           {page.description ? (
             <p className="docs-description">{page.description}</p>
           ) : null}
-          {page.updatedAt ? (
+          {updatedAt ? (
             <p className="docs-updated">
               Last updated{" "}
-              <time dateTime={page.updatedAt}>
-                {formatDocUpdatedAt(page.updatedAt)}
-              </time>
+              <time dateTime={updatedAt}>{formatDocUpdatedAt(updatedAt)}</time>
             </p>
           ) : null}
         </div>
