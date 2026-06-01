@@ -886,7 +886,18 @@ button {
 
 .resource-card:hover {
   transform: translateY(-6px);
+}
+
+.resource-card:not(.resource-card--purple):not(.resource-card--dark):hover {
   background: var(--paper);
+}
+
+.resource-card--purple:hover {
+  background: color-mix(in srgb, var(--purple) 86%, var(--paper));
+}
+
+.resource-card--dark:hover {
+  background: color-mix(in srgb, var(--deep-green) 92%, var(--paper));
 }
 
 .resource-card--purple {
