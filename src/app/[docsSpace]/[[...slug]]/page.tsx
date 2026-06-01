@@ -5,26 +5,38 @@ import { notFound } from "next/navigation";
 import { DocsToc } from "@/components/docs-toc";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { MobileDocNav } from "@/components/site-chrome";
+import { getDocsSpaces } from "@/lib/docs-spaces";
 import {
-  generateDocParams,
   getAdjacentDocPages,
   getDocNav,
   getDocPage,
+  getDocPages,
   getDocToc,
   getPageImage,
 } from "@/lib/source";
 
-export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
-  const params = await props.params;
-  const page = getDocPage(params.slug);
+interface DocsPageProps {
+  params: Promise<{ docsSpace: string; slug?: string[] }>;
+}
+
+function isDocsSpace(value: string) {
+  return getDocsSpaces().some((space) => space.href === `/${value}`);
+}
+
+export default async function Page({ params }: DocsPageProps) {
+  const { docsSpace, slug } = await params;
+  if (!isDocsSpace(docsSpace)) notFound();
+
+  const docsSpaces = getDocsSpaces();
+  const page = getDocPage(slug, docsSpace);
   if (!page) notFound();
-  const { previous, next } = getAdjacentDocPages(page);
+  const { previous, next } = getAdjacentDocPages(page, docsSpace);
   const toc = getDocToc(page.content);
 
   return (
     <>
       <article className="docs-article">
-        <MobileDocNav nav={getDocNav()} />
+        <MobileDocNav docsSpaces={docsSpaces} nav={getDocNav(docsSpace)} />
         <div className="docs-hero-card">
           <p className="section-kicker">Kanari Documentation</p>
           <h1 className="docs-title">{page.title}</h1>
@@ -65,14 +77,21 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
 }
 
 export function generateStaticParams() {
-  return generateDocParams();
+  return getDocsSpaces().flatMap((space) =>
+    getDocPages(space.href.slice(1)).map((page) => ({
+      docsSpace: space.href.slice(1),
+      slug: page.slugs,
+    })),
+  );
 }
 
-export async function generateMetadata(
-  props: PageProps<"/docs/[[...slug]]">,
-): Promise<Metadata> {
-  const params = await props.params;
-  const page = getDocPage(params.slug);
+export async function generateMetadata({
+  params,
+}: DocsPageProps): Promise<Metadata> {
+  const { docsSpace, slug } = await params;
+  if (!isDocsSpace(docsSpace)) notFound();
+
+  const page = getDocPage(slug, docsSpace);
   if (!page) notFound();
 
   return {

@@ -1,33 +1,50 @@
-import docsSpaces from "../../content/docs-spaces.json";
+import fs from "node:fs";
+import path from "node:path";
+import type { DocsSpace } from "@/lib/docs-space-types";
 
-export interface DocsSpace {
-  description: string;
-  href: string;
-  icon: "book" | "file" | "layers";
-  title: string;
+const contentRoot = path.join(process.cwd(), "content");
+const icons = ["book", "file", "layers"] as const;
+
+interface SpaceMeta {
+  description?: string;
+  href?: string;
+  icon?: DocsSpace["icon"];
+  source?: string;
+  title?: string;
 }
 
-function isDocsSpace(space: (typeof docsSpaces)[number]): space is DocsSpace {
-  return (
-    typeof space.description === "string" &&
-    typeof space.href === "string" &&
-    ["book", "file", "layers"].includes(space.icon) &&
-    typeof space.title === "string"
-  );
+interface RootMeta {
+  space?: SpaceMeta;
 }
 
-export const allDocsSpaces = docsSpaces.filter(isDocsSpace);
+function readRootMeta(dir: string): RootMeta {
+  const file = path.join(dir, "meta.json");
+  if (!fs.existsSync(file)) return {};
 
-export function getDocsSpace(pathname: string) {
-  return (
-    allDocsSpaces.find(
-      (space) =>
-        pathname === space.href || pathname.startsWith(`${space.href}/`),
-    ) ?? allDocsSpaces[0]
-  );
+  return JSON.parse(fs.readFileSync(file, "utf8"));
 }
 
-export function withDocsSpace(url: string | undefined, docsSpace: string) {
-  if (!url) return docsSpace;
-  return url.replace(/^\/docs(?=\/|$)/, docsSpace);
+function isIcon(value: string | undefined): value is DocsSpace["icon"] {
+  return icons.some((icon) => icon === value);
+}
+
+export function getDocsSpaces(): DocsSpace[] {
+  return fs
+    .readdirSync(contentRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .flatMap((entry) => {
+      const meta = readRootMeta(path.join(contentRoot, entry.name));
+      if (!meta.space?.title) return [];
+
+      return [
+        {
+          content: meta.space.source ?? entry.name,
+          description: meta.space.description ?? "",
+          href: meta.space.href ?? `/${entry.name}`,
+          icon: isIcon(meta.space.icon) ? meta.space.icon : "file",
+          title: meta.space.title,
+        },
+      ];
+    })
+    .sort((a, b) => a.href.localeCompare(b.href, undefined, { numeric: true }));
 }

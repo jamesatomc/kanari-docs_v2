@@ -1,0 +1,104 @@
+---
+title: Install Kanari Docs
+description: Build and run a Kanari-style documentation site from scratch.
+---
+
+# Install Kanari Docs
+
+This guide explains how to run `kanari-docs_v2` for Markdown and MDX documentation with search, dark mode, and multiple content spaces.
+
+## Prerequisites
+
+Install these tools before you begin:
+
+- [Git](https://git-scm.com/)
+- [Node.js](https://nodejs.org/) LTS
+- [Bun](https://bun.sh/) for package installation and the development server
+
+## Download the Project
+
+Clone the repository and enter the Docs directory:
+
+```bash
+git clone https://github.com/kanari-network/kanari-sdk.git
+cd kanari-sdk/kanari-docs_v2
+```
+
+## Install Dependencies
+
+```bash
+bun install
+```
+
+## Start the Development Server
+
+```bash
+bun run dev
+```
+
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Write a New Article
+
+The main documentation lives in `content/docs`, and this installation guide lives in `content/installation`.
+
+Create an `.mdx` file with frontmatter:
+
+```mdx
+---
+title: Article title
+description: A short description
+---
+
+# Article title
+
+Start writing your content here.
+```
+
+## Add a Documentation Space
+
+Create a folder with any name, such as `content/handbook`, and add `meta.json`:
+
+```json
+{
+  "space": {
+    "description": "Additional guides",
+    "href": "/handbook",
+    "icon": "file",
+    "title": "Kanari Handbook"
+  },
+  "pages": ["index"]
+}
+```
+
+Then add `content/handbook/index.mdx`. The framework creates the `/handbook` route and adds the title to the dropdown automatically without TypeScript changes.
+
+To create another entry that reuses existing content, add `source`:
+
+```json
+{
+  "space": {
+    "description": "Additional guides",
+    "href": "/handbook",
+    "icon": "file",
+    "source": "docs",
+    "title": "Kanari Handbook"
+  }
+}
+```
+
+## Build for Production
+
+Use Node.js for the production build:
+
+```bash
+npm run build
+npm run start
+```
+
+## Next Steps
+
+- Add `.mdx` articles to your content folder.
+- Control sidebar ordering with `meta.json`.
+- Use the search palette to find headings and text blocks.
+- Review light mode and dark mode before deployment.

@@ -1,3 +1,4 @@
+import { getDocsSpaces } from "@/lib/docs-spaces";
 import { type DocPage, getDocPages, slugifyHeading } from "@/lib/source";
 
 export const revalidate = false;
@@ -89,7 +90,13 @@ function entriesFor(page: DocPage): SearchEntry[] {
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const query = url.searchParams.get("q")?.toLowerCase().trim() ?? "";
-  const pages = getDocPages();
+  const activeSpace = url.searchParams.get("space") ?? "all";
+  const allDocsSpaces = getDocsSpaces();
+  const spaces =
+    activeSpace === "all"
+      ? allDocsSpaces
+      : allDocsSpaces.filter((space) => space.href === activeSpace);
+  const pages = spaces.flatMap((space) => getDocPages(space.href.slice(1)));
   const seen = new Set<string>();
 
   const results = pages

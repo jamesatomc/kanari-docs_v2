@@ -2,10 +2,9 @@
 
 import { ArrowRight, ChevronDown, Search } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { allDocsSpaces, getDocsSpace, withDocsSpace } from "@/lib/docs-spaces";
+import type { DocsSpace } from "@/lib/docs-space-types";
 
 interface SearchResult {
   title: string;
@@ -33,15 +32,13 @@ function highlightMatch(value: string, query: string) {
   });
 }
 
-export function DocsSearch() {
-  const pathname = usePathname();
+export function DocsSearch({ docsSpaces }: { docsSpaces: DocsSpace[] }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [activeDocsSpace, setActiveDocsSpace] = useState("all");
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const docsSpace = getDocsSpace(pathname).href;
 
   const closeSearch = useCallback(() => {
     setOpen(false);
@@ -74,7 +71,7 @@ export function DocsSearch() {
 
       try {
         const response = await fetch(
-          `/api/search?q=${encodeURIComponent(query)}`,
+          `/api/search?q=${encodeURIComponent(query)}&space=${encodeURIComponent(activeDocsSpace)}`,
           {
             signal: controller.signal,
           },
@@ -93,15 +90,13 @@ export function DocsSearch() {
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [open, query]);
+  }, [activeDocsSpace, open, query]);
 
   const activeFilterTitle =
     activeDocsSpace === "all"
       ? "All"
-      : (allDocsSpaces.find((space) => space.href === activeDocsSpace)?.title ??
+      : (docsSpaces.find((space) => space.href === activeDocsSpace)?.title ??
         "All");
-  const resultDocsSpace =
-    activeDocsSpace === "all" ? docsSpace : activeDocsSpace;
 
   return (
     <>
@@ -116,102 +111,102 @@ export function DocsSearch() {
 
       {open
         ? createPortal(
-            <div className="search-overlay">
-              <button
-                aria-label="Close search"
-                className="search-overlay__backdrop"
-                onClick={closeSearch}
-                type="button"
-              />
-              <section
-                aria-label="Search documentation"
-                aria-modal="true"
-                className="search-dialog"
-                role="dialog"
-              >
-                <div className="search-dialog__header">
-                  <Search aria-hidden="true" size={20} />
-                  <input
-                    aria-label="Search docs"
-                    onChange={(event) => setQuery(event.target.value)}
-                    placeholder="Search docs..."
-                    ref={inputRef}
-                    type="search"
-                    value={query}
-                  />
-                  <button
-                    aria-label="Close search"
-                    className="search-dialog__escape"
-                    onClick={closeSearch}
-                    type="button"
-                  >
-                    Esc
-                  </button>
-                </div>
+          <div className="search-overlay">
+            <button
+              aria-label="Close search"
+              className="search-overlay__backdrop"
+              onClick={closeSearch}
+              type="button"
+            />
+            <section
+              aria-label="Search documentation"
+              aria-modal="true"
+              className="search-dialog"
+              role="dialog"
+            >
+              <div className="search-dialog__header">
+                <Search aria-hidden="true" size={20} />
+                <input
+                  aria-label="Search docs"
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search docs..."
+                  ref={inputRef}
+                  type="search"
+                  value={query}
+                />
+                <button
+                  aria-label="Close search"
+                  className="search-dialog__escape"
+                  onClick={closeSearch}
+                  type="button"
+                >
+                  Esc
+                </button>
+              </div>
 
-                <div className="search-results">
-                  <p className="search-results__meta">
-                    {!query.trim()
-                      ? "Type to search documentation"
-                      : loading
-                        ? "Searching..."
-                        : `${results.length} ${results.length === 1 ? "result" : "results"}`}
-                  </p>
-                  {results.map((result) => (
-                    <Link
-                      className="search-result"
-                      href={withDocsSpace(result.url, resultDocsSpace)}
-                      key={`${result.url}-${result.title}-${result.excerpt}`}
-                      onClick={closeSearch}
-                    >
-                      <div>
-                        <strong>{highlightMatch(result.title, query)}</strong>
-                        <p>
-                          {highlightMatch(
-                            result.excerpt || result.description,
-                            query,
-                          )}
-                        </p>
-                      </div>
-                      <ArrowRight aria-hidden="true" size={16} />
-                    </Link>
-                  ))}
+              <div className="search-results">
+                <p className="search-results__meta">
+                  {!query.trim()
+                    ? "Type to search documentation"
+                    : loading
+                      ? "Searching..."
+                      : `${results.length} ${results.length === 1 ? "result" : "results"}`}
+                </p>
+                {results.map((result) => (
+                  <Link
+                    className="search-result"
+                    href={result.url}
+                    key={`${result.url}-${result.title}-${result.excerpt}`}
+                    onClick={closeSearch}
+                  >
+                    <div>
+                      <strong>{highlightMatch(result.title, query)}</strong>
+                      <p>
+                        {highlightMatch(
+                          result.excerpt || result.description,
+                          query,
+                        )}
+                      </p>
+                    </div>
+                    <ArrowRight aria-hidden="true" size={16} />
+                  </Link>
+                ))}
+              </div>
+              <details className="search-dialog__footer">
+                <summary>
+                  <span>Filter</span>
+                  <strong>{activeFilterTitle}</strong>
+                  <ChevronDown aria-hidden="true" size={13} />
+                </summary>
+                <div className="search-filter-menu">
+                  {[{ href: "all", title: "All" }, ...docsSpaces].map(
+                    (space) => (
+                      <button
+                        aria-pressed={activeDocsSpace === space.href}
+                        className={
+                          activeDocsSpace === space.href
+                            ? "search-filter-menu__option search-filter-menu__option--active"
+                            : "search-filter-menu__option"
+                        }
+                        key={space.href}
+                        onClick={(event) => {
+                          setActiveDocsSpace(space.href);
+                          event.currentTarget
+                            .closest("details")
+                            ?.removeAttribute("open");
+                        }}
+                        type="button"
+                      >
+                        {space.title}
+                      </button>
+                    ),
+                  )}
                 </div>
-                <details className="search-dialog__footer">
-                  <summary>
-                    <span>Filter</span>
-                    <strong>{activeFilterTitle}</strong>
-                    <ChevronDown aria-hidden="true" size={13} />
-                  </summary>
-                  <div className="search-filter-menu">
-                    {[{ href: "all", title: "All" }, ...allDocsSpaces].map(
-                      (space) => (
-                        <button
-                          aria-pressed={activeDocsSpace === space.href}
-                          className={
-                            activeDocsSpace === space.href
-                              ? "search-filter-menu__option search-filter-menu__option--active"
-                              : "search-filter-menu__option"
-                          }
-                          key={space.href}
-                          onClick={(event) => {
-                            setActiveDocsSpace(space.href);
-                            event.currentTarget
-                              .closest("details")
-                              ?.removeAttribute("open");
-                          }}
-                          type="button"
-                        >
-                          {space.title}
-                        </button>
-                      ),
-                    )}
-                  </div>
-                </details>
-              </section>
-            </div>,
-            document.body,
-          )
+              </details>
+            </section>
+          </div>,
+          document.body,
+        )
         : null}
     </>
   );

@@ -58,9 +58,8 @@ export function DocsToc({ items }: { items: TocItem[] }) {
         />
         {items.map((item) => (
           <a
-            className={`docs-toc__link docs-toc__link--level-${item.level} ${
-              activeId === item.id ? "docs-toc__link--active" : ""
-            }`}
+            className={`docs-toc__link docs-toc__link--level-${item.level} ${activeId === item.id ? "docs-toc__link--active" : ""
+              }`}
             href={`#${item.id}`}
             key={item.id}
           >

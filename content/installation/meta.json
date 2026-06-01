@@ -1,0 +1,9 @@
+{
+  "space": {
+    "description": "Set up a content-driven documentation site with Kanari Docs",
+    "href": "/installation",
+    "icon": "layers",
+    "title": "Kanari Docs Installation"
+  },
+  "pages": ["index"]
+}

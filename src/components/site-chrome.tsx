@@ -13,11 +13,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
-  allDocsSpaces,
   type DocsSpace,
   getDocsSpace,
   withDocsSpace,
-} from "@/lib/docs-spaces";
+} from "@/lib/docs-space-types";
 import type { NavItem } from "@/lib/source";
 import { DocsSearch } from "./docs-search";
 import { ThemeToggle } from "./theme-toggle";
@@ -36,9 +35,15 @@ function isActiveDocUrl(
   return pathname === withDocsSpace(url, docsSpace);
 }
 
-function NavLinks({ items }: { items: NavItem[] }) {
+function NavLinks({
+  docsSpaces,
+  items,
+}: {
+  docsSpaces: DocsSpace[];
+  items: NavItem[];
+}) {
   const pathname = usePathname();
-  const docsSpace = getDocsSpace(pathname).href;
+  const docsSpace = getDocsSpace(docsSpaces, pathname).href;
 
   return (
     <div>
@@ -70,9 +75,9 @@ function NavLinks({ items }: { items: NavItem[] }) {
   );
 }
 
-function DocsSwitcher() {
+function DocsSwitcher({ docsSpaces }: { docsSpaces: DocsSpace[] }) {
   const pathname = usePathname();
-  const currentSpace = getDocsSpace(pathname);
+  const currentSpace = getDocsSpace(docsSpaces, pathname);
   const CurrentIcon = docsSpaceIcons[currentSpace.icon];
 
   return (
@@ -86,7 +91,7 @@ function DocsSwitcher() {
         <ChevronsUpDown aria-hidden="true" size={16} />
       </summary>
       <div className="docs-switcher__menu">
-        {allDocsSpaces.map((space) => {
+        {docsSpaces.map((space) => {
           const Icon = docsSpaceIcons[space.icon];
           const isCurrent = currentSpace.href === space.href;
 
@@ -110,7 +115,7 @@ function DocsSwitcher() {
   );
 }
 
-export function SiteHeader() {
+export function SiteHeader({ docsSpaces }: { docsSpaces: DocsSpace[] }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
   const previousScrollY = useRef(0);
@@ -168,7 +173,7 @@ export function SiteHeader() {
 
         <div className="site-header__actions">
           <ThemeToggle />
-          <DocsSearch />
+          <DocsSearch docsSpaces={docsSpaces} />
           <button
             aria-expanded={menuOpen}
             aria-label="Toggle navigation"
@@ -196,18 +201,20 @@ export function SiteHeader() {
 
 export function DocsShell({
   children,
+  docsSpaces,
   nav,
 }: {
   children: React.ReactNode;
+  docsSpaces: DocsSpace[];
   nav: NavItem[];
 }) {
   return (
     <>
-      <SiteHeader />
+      <SiteHeader docsSpaces={docsSpaces} />
       <div className="docs-layout section-wrap">
         <aside className="docs-sidebar">
-          <DocsSwitcher />
-          <NavLinks items={nav} />
+          <DocsSwitcher docsSpaces={docsSpaces} />
+          <NavLinks docsSpaces={docsSpaces} items={nav} />
         </aside>
         {children}
       </div>
@@ -216,13 +223,19 @@ export function DocsShell({
   );
 }
 
-export function MobileDocNav({ nav }: { nav: NavItem[] }) {
+export function MobileDocNav({
+  docsSpaces,
+  nav,
+}: {
+  docsSpaces: DocsSpace[];
+  nav: NavItem[];
+}) {
   return (
     <details className="mobile-doc-nav">
       <summary>Documentation</summary>
       <div className="mt-5">
-        <DocsSwitcher />
-        <NavLinks items={nav} />
+        <DocsSwitcher docsSpaces={docsSpaces} />
+        <NavLinks docsSpaces={docsSpaces} items={nav} />
       </div>
     </details>
   );

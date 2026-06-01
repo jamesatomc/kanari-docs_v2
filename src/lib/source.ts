@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
+import { getDocsSpaces } from "@/lib/docs-spaces";
 
-const docsRoot = path.join(process.cwd(), "content", "docs");
+const contentRoot = path.join(process.cwd(), "content");
 
 export interface DocPage {
   title: string;
@@ -64,7 +65,7 @@ export function slugifyHeading(value: string) {
   return value
     .toLowerCase()
     .replace(/[`*_~[\]()]/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/[^\p{L}\p{M}\p{N}\s-]/gu, "")
     .trim()
     .replace(/\s+/g, "-");
 }
@@ -88,23 +89,36 @@ export function getDocToc(content: string): TocItem[] {
     .filter((item) => item.id);
 }
 
-function fileForSlugs(slugs?: string[]) {
+function getDocSource(docsSpace = "docs") {
+  const space = getDocsSpaces().find((item) => item.href === `/${docsSpace}`);
+
+  return {
+    docsRoot: path.join(contentRoot, space?.content ?? docsSpace),
+    href: space?.href ?? `/${docsSpace}`,
+  };
+}
+
+function fileForSlugs(docsRoot: string, slugs?: string[]) {
   const safeSlugs = slugs?.length ? slugs : ["index"];
   return `${path.join(docsRoot, ...safeSlugs)}.mdx`;
 }
 
-function slugsFromFile(filePath: string) {
+function slugsFromFile(docsRoot: string, filePath: string) {
   const relative = path.relative(docsRoot, filePath).replace(/\\/g, "/");
   const withoutExt = relative.replace(/\.mdx$/, "");
   return withoutExt === "index" ? [] : withoutExt.split("/");
 }
 
-function readDoc(filePath: string): DocPage | null {
+function readDoc(
+  docsRoot: string,
+  href: string,
+  filePath: string,
+): DocPage | null {
   if (!fs.existsSync(filePath)) return null;
 
   const raw = fs.readFileSync(filePath, "utf8");
   const { data, content } = parseFrontmatter(raw);
-  const slugs = slugsFromFile(filePath);
+  const slugs = slugsFromFile(docsRoot, filePath);
   const fallbackTitle = slugs.length
     ? titleFromSlug(slugs.at(-1) ?? "Docs")
     : "Docs";
@@ -116,11 +130,13 @@ function readDoc(filePath: string): DocPage | null {
     raw,
     path: path.relative(docsRoot, filePath).replace(/\\/g, "/"),
     slugs,
-    url: `/docs${slugs.length ? `/${slugs.join("/")}` : ""}`,
+    url: `${href}${slugs.length ? `/${slugs.join("/")}` : ""}`,
   };
 }
 
 function walkMdx(dir: string): string[] {
+  if (!fs.existsSync(dir)) return [];
+
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const files: string[] = [];
 
@@ -140,7 +156,12 @@ function readMeta(dir: string): { title?: string; pages?: string[] } {
   return JSON.parse(fs.readFileSync(file, "utf8"));
 }
 
-function navForDir(dir: string, baseSlugs: string[] = []): NavItem[] {
+function navForDir(
+  docsRoot: string,
+  href: string,
+  dir: string,
+  baseSlugs: string[] = [],
+): NavItem[] {
   const meta = readMeta(dir);
   const entries =
     meta.pages ??
@@ -159,12 +180,12 @@ function navForDir(dir: string, baseSlugs: string[] = []): NavItem[] {
       const childMeta = readMeta(childDir);
       items.push({
         title: childMeta.title ?? titleFromSlug(entry),
-        children: navForDir(childDir, [...baseSlugs, entry]),
+        children: navForDir(docsRoot, href, childDir, [...baseSlugs, entry]),
       });
       continue;
     }
 
-    const page = readDoc(file);
+    const page = readDoc(docsRoot, href, file);
     if (!page) continue;
 
     items.push({
@@ -176,20 +197,24 @@ function navForDir(dir: string, baseSlugs: string[] = []): NavItem[] {
   return items;
 }
 
-export function getDocPage(slugs?: string[]) {
-  return readDoc(fileForSlugs(slugs));
+export function getDocPage(slugs?: string[], docsSpace = "docs") {
+  const { docsRoot, href } = getDocSource(docsSpace);
+  return readDoc(docsRoot, href, fileForSlugs(docsRoot, slugs));
 }
 
-export function getDocPages() {
+export function getDocPages(docsSpace = "docs") {
+  const { docsRoot, href } = getDocSource(docsSpace);
   return walkMdx(docsRoot)
-    .map(readDoc)
+    .map((file) => readDoc(docsRoot, href, file))
     .filter((page): page is DocPage => Boolean(page))
     .sort((a, b) => a.url.localeCompare(b.url));
 }
 
-export function getAdjacentDocPages(page: DocPage) {
-  const pagesByUrl = new Map(getDocPages().map((item) => [item.url, item]));
-  const orderedUrls = flattenNav(getDocNav());
+export function getAdjacentDocPages(page: DocPage, docsSpace = "docs") {
+  const pagesByUrl = new Map(
+    getDocPages(docsSpace).map((item) => [item.url, item]),
+  );
+  const orderedUrls = flattenNav(getDocNav(docsSpace));
   const pages = orderedUrls.flatMap((url) => {
     const item = pagesByUrl.get(url);
     return item ? [item] : [];
@@ -202,8 +227,9 @@ export function getAdjacentDocPages(page: DocPage) {
   };
 }
 
-export function getDocNav() {
-  return navForDir(docsRoot);
+export function getDocNav(docsSpace = "docs") {
+  const { docsRoot, href } = getDocSource(docsSpace);
+  return navForDir(docsRoot, href, docsRoot);
 }
 
 function flattenNav(items: NavItem[]): string[] {
@@ -212,8 +238,8 @@ function flattenNav(items: NavItem[]): string[] {
   );
 }
 
-export function generateDocParams() {
-  return getDocPages().map((page) => ({ slug: page.slugs }));
+export function generateDocParams(docsSpace = "docs") {
+  return getDocPages(docsSpace).map((page) => ({ slug: page.slugs }));
 }
 
 export function getPageImage(page: DocPage) {
