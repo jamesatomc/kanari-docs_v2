@@ -56,6 +56,15 @@ body {
   --hero-sticker-accent-background: var(--lime);
   --chrome-surface: color-mix(in srgb, var(--paper) 80%, transparent);
   --noise-dot: color-mix(in srgb, var(--ink) 16%, transparent);
+  --type-brand: 23px;
+  --type-nav: 12px;
+  --type-action: 12px;
+  --type-kicker: 11px;
+  --type-hero-title: clamp(75px, 8vw, 124px);
+  --type-hero-description: 18px;
+  --type-section-title: clamp(48px, 6vw, 76px);
+  --type-cta-title: clamp(55px, 7vw, 90px);
+  --type-footer-copy: 13px;
   margin: 0;
   color: var(--ink);
   background: var(--cream);
@@ -147,7 +156,7 @@ button {
   align-items: center;
   gap: 9px;
   color: var(--ink);
-  font-size: 23px;
+  font-size: var(--type-brand);
   font-weight: 950;
   letter-spacing: -0.08em;
   text-transform: uppercase;
@@ -183,7 +192,7 @@ button {
 .site-nav a,
 .site-footer a {
   color: var(--ink);
-  font-size: 12px;
+  font-size: var(--type-nav);
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -447,7 +456,7 @@ button {
   justify-content: center;
   gap: 12px;
   border-radius: 30px;
-  font-size: 12px;
+  font-size: var(--type-action);
   font-weight: 950;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -492,8 +501,8 @@ button {
   align-items: center;
   gap: 9px;
   margin: 0 0 22px;
-  color: var(--muted);
-  font-size: 11px;
+  color: color-mix(in srgb, var(--ink) 60%, transparent);
+  font-size: var(--type-kicker);
   font-weight: 900;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -530,7 +539,7 @@ button {
 
 .home-hero h1 {
   margin: 0 0 25px;
-  font-size: clamp(75px, 8vw, 124px);
+  font-size: var(--type-hero-title);
   font-weight: 950;
   letter-spacing: -0.1em;
   line-height: 0.88;
@@ -546,7 +555,7 @@ button {
   max-width: 580px;
   margin: 0 0 32px;
   color: color-mix(in srgb, var(--ink) 72%, transparent);
-  font-size: 18px;
+  font-size: var(--type-hero-description);
   line-height: 1.55;
 }
 
@@ -835,7 +844,7 @@ button {
 
 .section-heading h2 {
   margin: 0 0 15px;
-  font-size: clamp(48px, 6vw, 76px);
+  font-size: var(--type-section-title);
   font-weight: 950;
   letter-spacing: -0.09em;
   line-height: 0.92;
@@ -1247,7 +1256,7 @@ button {
   margin: 0 0 16px;
   position: relative;
   z-index: 1;
-  font-size: clamp(55px, 7vw, 90px);
+  font-size: var(--type-cta-title);
   font-weight: 950;
   letter-spacing: -0.095em;
   line-height: 0.92;
@@ -1665,7 +1674,7 @@ button {
 .site-footer p {
   margin: 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--type-footer-copy);
   line-height: 1.5;
 }
 
@@ -2038,6 +2047,11 @@ button {
 }
 
 @media (max-width: 980px) {
+  body {
+    --type-hero-title: clamp(68px, 16vw, 108px);
+    --type-hero-description: 16px;
+  }
+
   .section-wrap,
   .site-header {
     width: min(calc(100% - 30px), 680px);
@@ -2115,14 +2129,6 @@ button {
     padding: 64px 0;
   }
 
-  .home-hero h1 {
-    font-size: clamp(68px, 16vw, 108px);
-  }
-
-  .hero-description {
-    font-size: 16px;
-  }
-
   .hero-visual {
     min-height: min(76vw, 470px);
   }
@@ -2178,6 +2184,11 @@ button {
 }
 
 @media (max-width: 700px) {
+  body {
+    --type-hero-title: clamp(60px, 15vw, 86px);
+    --type-section-title: clamp(50px, 13vw, 68px);
+  }
+
   .section-wrap,
   .site-header {
     width: calc(100% - 24px);
@@ -2187,15 +2198,18 @@ button {
     padding-top: 50px;
   }
 
-  .home-hero h1 {
-    font-size: clamp(60px, 15vw, 86px);
-  }
 }
 
 @media (max-width: 540px) {
+  body {
+    --type-brand: 21px;
+    --type-hero-title: clamp(58px, 16vw, 78px);
+    --type-section-title: 51px;
+    --type-cta-title: 61px;
+  }
+
   .brand {
     gap: 7px;
-    font-size: 21px;
   }
 
   .brand img {
@@ -2238,10 +2252,6 @@ button {
     padding-bottom: 64px;
   }
 
-  .home-hero h1 {
-    font-size: clamp(58px, 16vw, 78px);
-  }
-
   .docs-description {
     font-size: 16px;
   }
@@ -2282,7 +2292,6 @@ button {
     left: 0;
   }
 
-  .section-heading h2,
   .docs-title {
     font-size: clamp(42px, 13vw, 62px);
     letter-spacing: -0.07em;
@@ -2316,10 +2325,6 @@ button {
     padding: 32px 24px;
   }
 
-  .docs-cta h2 {
-    font-size: 61px;
-  }
-
   .mdx-card-grid {
     grid-template-columns: 1fr;
   }
@@ -2350,6 +2355,11 @@ button {
 }
 
 @media (max-width: 420px) {
+  body {
+    --type-hero-title: clamp(52px, 15.5vw, 66px);
+    --type-hero-description: 15px;
+  }
+
   .section-wrap,
   .site-header {
     width: calc(100% - 18px);
@@ -2389,13 +2399,6 @@ button {
     top: 66px;
   }
 
-  .home-hero h1 {
-    font-size: clamp(52px, 15.5vw, 66px);
-  }
-
-  .hero-description {
-    font-size: 15px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
