@@ -29,31 +29,31 @@ body {
   --muted: var(--light-muted);
   --on-accent: var(--light-on-accent);
   --section-surface: var(--light-section-surface);
-  --network-graphic-background: var(--light-network-graphic-background);
-  --network-graphic-shadow: var(--light-network-graphic-shadow);
-  --network-graphic-pattern: var(--light-network-graphic-pattern);
-  --network-graphic-arc: var(--light-network-graphic-arc);
-  --network-orbit-border: var(--light-network-orbit-border);
-  --network-orbit-shadow: var(--light-network-orbit-shadow);
-  --network-orbit-two-border: var(--light-network-orbit-two-border);
-  --network-orbit-three-border: var(--light-network-orbit-three-border);
-  --network-core-border: var(--light-network-core-border);
-  --network-core-shadow: var(--light-network-core-shadow);
-  --network-node-border: var(--light-network-node-border);
-  --network-node-text: var(--light-network-node-text);
-  --network-node-background: var(--light-network-node-background);
-  --network-node-shadow: var(--light-network-node-shadow);
-  --network-node-accent-text: var(--light-network-node-accent-text);
-  --network-node-accent-background: var(--light-network-node-accent-background);
-  --network-node-dark-text: var(--light-network-node-dark-text);
-  --network-node-dark-background: var(--light-network-node-dark-background);
-  --network-spark-background: var(--light-network-spark-background);
-  --network-spark-shadow: var(--light-network-spark-shadow);
-  --hero-sticker-border: var(--light-hero-sticker-border);
-  --hero-sticker-text: var(--light-hero-sticker-text);
-  --hero-sticker-background: var(--light-hero-sticker-background);
-  --hero-sticker-shadow: var(--light-hero-sticker-shadow);
-  --hero-sticker-accent-background: var(--light-hero-sticker-accent-background);
+  --network-graphic-background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--paper) 20%, transparent) 0 17%, transparent 17.5%), radial-gradient(circle at 34% 24%, color-mix(in srgb, var(--warm-white) 32%, transparent), transparent 19rem), linear-gradient(135deg, color-mix(in srgb, var(--purple) 78%, var(--paper)) 0%, color-mix(in srgb, var(--purple) 88%, var(--purple-strong)) 62%, color-mix(in srgb, var(--purple) 82%, var(--paper)) 100%);
+  --network-graphic-shadow: inset 0 0 0 1px color-mix(in srgb, var(--on-accent) 12%, transparent), inset 0 -24px 70px color-mix(in srgb, var(--purple-strong) 16%, transparent), 28px 30px 0 color-mix(in srgb, var(--deep-green) 7%, transparent), 0 32px 80px color-mix(in srgb, var(--purple-strong) 18%, transparent);
+  --network-graphic-pattern: radial-gradient(color-mix(in srgb, var(--on-accent) 38%, transparent) 0.55px, transparent 0.65px);
+  --network-graphic-arc: conic-gradient(from 190deg, transparent 0 62%, color-mix(in srgb, var(--paper) 78%, transparent) 66% 82%, transparent 88%);
+  --network-orbit-border: color-mix(in srgb, var(--on-accent) 32%, transparent);
+  --network-orbit-shadow: 0 0 0 1px color-mix(in srgb, var(--warm-white) 12%, transparent);
+  --network-orbit-two-border: color-mix(in srgb, var(--on-accent) 27%, transparent);
+  --network-orbit-three-border: color-mix(in srgb, var(--on-accent) 20%, transparent);
+  --network-core-border: color-mix(in srgb, var(--on-accent) 22%, transparent);
+  --network-core-shadow: 0 18px 45px color-mix(in srgb, var(--deep-green) 13%, transparent), 0 0 0 9px color-mix(in srgb, var(--lime) 28%, transparent);
+  --network-node-border: color-mix(in srgb, var(--on-accent) 18%, transparent);
+  --network-node-text: var(--on-accent);
+  --network-node-background: var(--paper);
+  --network-node-shadow: 0 13px 30px color-mix(in srgb, var(--deep-green) 10%, transparent);
+  --network-node-accent-text: var(--on-accent);
+  --network-node-accent-background: var(--lime);
+  --network-node-dark-text: var(--inverted-text);
+  --network-node-dark-background: var(--deep-green);
+  --network-spark-background: var(--deep-green);
+  --network-spark-shadow: 0 0 0 5px color-mix(in srgb, var(--deep-green) 4%, transparent);
+  --hero-sticker-border: var(--line);
+  --hero-sticker-text: var(--on-accent);
+  --hero-sticker-background: color-mix(in srgb, var(--paper) 86%, transparent);
+  --hero-sticker-shadow: 0 18px 45px color-mix(in srgb, var(--deep-green) 8%, transparent);
+  --hero-sticker-accent-background: var(--lime);
   --chrome-surface: color-mix(in srgb, var(--paper) 80%, transparent);
   --noise-dot: color-mix(in srgb, var(--ink) 16%, transparent);
   margin: 0;
@@ -545,7 +545,7 @@ button {
 .hero-description {
   max-width: 580px;
   margin: 0 0 32px;
-  color: var(--muted);
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
   font-size: 18px;
   line-height: 1.55;
 }
@@ -1690,31 +1690,16 @@ button {
   --muted: var(--dark-muted);
   --on-accent: var(--dark-on-accent);
   --section-surface: var(--dark-section-surface);
-  --network-graphic-background: var(--dark-network-graphic-background);
-  --network-graphic-shadow: var(--dark-network-graphic-shadow);
-  --network-graphic-pattern: var(--dark-network-graphic-pattern);
-  --network-graphic-arc: var(--dark-network-graphic-arc);
-  --network-orbit-border: var(--dark-network-orbit-border);
-  --network-orbit-shadow: var(--dark-network-orbit-shadow);
-  --network-orbit-two-border: var(--dark-network-orbit-two-border);
-  --network-orbit-three-border: var(--dark-network-orbit-three-border);
-  --network-core-border: var(--dark-network-core-border);
-  --network-core-shadow: var(--dark-network-core-shadow);
-  --network-node-border: var(--dark-network-node-border);
-  --network-node-text: var(--dark-network-node-text);
-  --network-node-background: var(--dark-network-node-background);
-  --network-node-shadow: var(--dark-network-node-shadow);
-  --network-node-accent-text: var(--dark-network-node-accent-text);
-  --network-node-accent-background: var(--dark-network-node-accent-background);
-  --network-node-dark-text: var(--dark-network-node-dark-text);
-  --network-node-dark-background: var(--dark-network-node-dark-background);
-  --network-spark-background: var(--dark-network-spark-background);
-  --network-spark-shadow: var(--dark-network-spark-shadow);
-  --hero-sticker-border: var(--dark-hero-sticker-border);
-  --hero-sticker-text: var(--dark-hero-sticker-text);
-  --hero-sticker-background: var(--dark-hero-sticker-background);
-  --hero-sticker-shadow: var(--dark-hero-sticker-shadow);
-  --hero-sticker-accent-background: var(--dark-hero-sticker-accent-background);
+  --chrome-surface: color-mix(in srgb, var(--paper) 80%, transparent);
+  --noise-dot: color-mix(in srgb, var(--ink) 16%, transparent);
+  --network-node-border: var(--line);
+  --network-node-text: var(--ink);
+  --network-node-background: color-mix(in srgb, var(--paper) 82%, var(--ink));
+  --network-spark-background: var(--lime);
+  --network-spark-shadow: 0 0 0 5px color-mix(in srgb, var(--lime) 18%, transparent);
+  --hero-sticker-border: var(--line);
+  --hero-sticker-text: var(--ink);
+  --hero-sticker-background: color-mix(in srgb, var(--paper) 82%, var(--ink));
 }
 
 .dark .site-noise {
@@ -1734,6 +1719,21 @@ button {
 
 .dark .theme-toggle {
   color: var(--ink);
+}
+
+.dark .network-node--two {
+  color: var(--on-accent);
+  background: var(--lime);
+}
+
+.dark .network-node--four {
+  color: var(--inverted-text);
+  background: var(--deep-green);
+}
+
+.dark .hero-sticker--bottom {
+  color: var(--on-accent);
+  background: var(--lime);
 }
 
 .dark .docs-sidebar,
@@ -2112,11 +2112,15 @@ button {
   .home-hero {
     min-height: auto;
     grid-template-columns: 1fr;
-    padding: 58px 0 88px;
+    padding: 64px 0;
   }
 
   .home-hero h1 {
-    font-size: clamp(62px, 16vw, 102px);
+    font-size: clamp(68px, 16vw, 108px);
+  }
+
+  .hero-description {
+    font-size: 16px;
   }
 
   .hero-visual {
@@ -2178,6 +2182,14 @@ button {
   .site-header {
     width: calc(100% - 24px);
   }
+
+  .home-hero {
+    padding-top: 50px;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(60px, 15vw, 86px);
+  }
 }
 
 @media (max-width: 540px) {
@@ -2223,16 +2235,13 @@ button {
   }
 
   .home-hero {
-    padding: 42px 0 72px;
+    padding-bottom: 64px;
   }
 
   .home-hero h1 {
-    font-size: clamp(52px, 15vw, 76px);
-    letter-spacing: -0.075em;
-    line-height: 0.94;
+    font-size: clamp(58px, 16vw, 78px);
   }
 
-  .hero-description,
   .docs-description {
     font-size: 16px;
   }
@@ -2378,6 +2387,14 @@ button {
 
   .site-nav {
     top: 66px;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(52px, 15.5vw, 66px);
+  }
+
+  .hero-description {
+    font-size: 15px;
   }
 }
 
