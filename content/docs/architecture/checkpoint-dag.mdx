@@ -1,0 +1,51 @@
+---
+title: Checkpoints and Mysticeti DAG
+description: How checkpoint height, DAG metadata, and node sync behave in the current system.
+---
+
+# Checkpoints and Mysticeti DAG
+
+Kanari's current rule is transaction-driven:
+
+> A validator creates a new checkpoint only when there is committed transaction work.
+
+This keeps idle devnet/testnet validators from burning CPU and disk by creating empty blocks forever. It also makes height easier to reason about: height is committed chain progress, not a timer.
+
+## What happens when there are no transactions?
+
+- The node can stay online.
+- P2P can still exchange peer info, sync requests, and DAG metadata.
+- Checkpoint height should not increase just because time passes.
+- RPC reads should not create checkpoints.
+
+## What happens when transactions arrive?
+
+1. RPC or P2P submits signed transactions.
+2. The engine verifies and queues them in the mempool.
+3. The checkpoint builder selects committed work.
+4. Move execution produces effects and object changes.
+5. The state root is updated.
+6. Checkpoint metadata and DAG evidence are persisted and gossiped.
+
+## Mysticeti alignment
+
+Kanari keeps a Mysticeti-style DAG metadata path:
+
+- validators produce and receive DAG vertices;
+- vertices are deduplicated by digest;
+- parent closure lookup scans retained DAG storage instead of relying on a tiny fixed round window;
+- checkpoint sync can use DAG metadata, checkpoints, snapshots, or validator backups depending on how far behind a node is.
+
+The DAG layer is not used to mint empty chain height by itself. That separation is intentional: DAG gossip can continue while chain height remains transaction-driven.
+
+## Long-running nodes
+
+For long-running validators, monitor:
+
+- equal checkpoint height across the committee once transactions settle;
+- equal state root across synced validators;
+- no unbounded pending mempool growth;
+- no repeated checkpoint/state-root mismatch warnings;
+- RocksDB disk growth and compaction.
+
+If a node falls very far behind, prefer strict snapshot recovery or encrypted validator backup restore rather than forcing ad-hoc local history reconstruction.

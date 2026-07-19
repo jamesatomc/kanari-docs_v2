@@ -1,0 +1,233 @@
+---
+title: Kanari Node CLI
+description: Run validators, local nodes, snapshots, genesis manifests, validator backups, and consensus key tooling.
+---
+
+# Kanari Node CLI
+
+`kanari-node` runs the RPC/P2P node and provides operator tooling for genesis, snapshots, backups, and consensus keys.
+
+```bash
+kanari-node <COMMAND>
+```
+
+## Command overview
+
+| Command | Purpose |
+| --- | --- |
+| `local` | Run a single local devnet node with P2P disabled. |
+| `start` | Start a validator/full node with explicit DAG authority and consensus keys. |
+| `consensus-keygen` | Generate Ed25519 consensus keys and a public-key map. |
+| `consensus-key-encrypt` | Encrypt an existing 32-byte consensus seed. |
+| `genesis-export` | Export the deterministic genesis manifest for other nodes. |
+| `snapshot-export` | Export a committed state snapshot from an existing database. |
+| `snapshot-import` | Verify and import a committed state snapshot into an empty data dir. |
+| `validator-backup-export` | Export encrypted full-validator recovery data. |
+| `validator-backup-import` | Restore encrypted full-validator recovery data. |
+
+## local
+
+Run a local-only devnet node.
+
+```powershell
+kanari-node local
+```
+
+Behavior:
+
+- RPC listens on `127.0.0.1:6767`.
+- P2P is disabled.
+- Data is stored in `.\.kanari-local`.
+- A persistent one-node consensus key set is generated under `.\.kanari-local\consensus-keys` if missing.
+- Network mode is devnet.
+
+Use this for quick CLI, wallet, Move, and explorer testing.
+
+## start
+
+Start a networked node/validator.
+
+```powershell
+kanari-node start `
+  --network devnet `
+  --p2p-port 19000 `
+  --rpc-port 19001 `
+  --rpc-host 0.0.0.0 `
+  --data-dir .\data\node1 `
+  --authority-id 0x1 `
+  --authorities 0x1,0x2,0x3,0x4 `
+  --consensus-private-key-file .\consensus-keys\node1-consensus-private-key.key `
+  --consensus-public-keys .\consensus-keys\consensus-public-keys.json `
+  --genesis .\genesis\devnet-genesis.json
+```
+
+Required for deterministic multi-node startup:
+
+- `--authority-id`
+- `--authorities`
+- `--consensus-private-key-file`
+- `--consensus-public-keys`
+
+Important options:
+
+- `--network <devnet|testnet|mainnet>`: default is `testnet`.
+- `--p2p-port <PORT>`: P2P listen port; default `19000`.
+- `--rpc-port <PORT>`: RPC listen port; default `19001`.
+- `--rpc-host <HOST>`: RPC bind host; default `0.0.0.0`.
+- `--data-dir <PATH>`: chain and state directory.
+- `--relay-server`: run as a relay server.
+- `--bootstrap <MULTIADDR>`: bootstrap peer; can be repeated.
+- `--genesis <PATH>`: shared genesis manifest validated before startup.
+
+`start` is strict on purpose. For a simple one-node local mode, use `kanari-node local`.
+
+## consensus-keygen
+
+Generate one private consensus key per node plus a shared public-key map.
+
+```powershell
+kanari-node consensus-keygen `
+  --node-count 4 `
+  --output-dir .\consensus-keys `
+  --force
+```
+
+Output shape:
+
+```text
+consensus-keys/
+  consensus-public-keys.json
+  node1-consensus-private-key.key
+  node2-consensus-private-key.key
+  node3-consensus-private-key.key
+  node4-consensus-private-key.key
+```
+
+If `KANARI_CONSENSUS_KEY_PASSWORD` is set, generated private key files are encrypted. Mainnet refuses plaintext consensus key files.
+
+## consensus-key-encrypt
+
+Encrypt an existing 32-byte consensus seed without changing the authority key.
+
+```powershell
+kanari-node consensus-key-encrypt `
+  --input .\node1-consensus-private-key.key `
+  --output .\node1-consensus-private-key.encrypted.key `
+  --force
+```
+
+Set `KANARI_CONSENSUS_KEY_PASSWORD` before running.
+
+## genesis-export
+
+Export the genesis manifest from an existing node database.
+
+```powershell
+kanari-node genesis-export `
+  --network devnet `
+  --data-dir .\data\node1 `
+  --output .\genesis\devnet-genesis.json
+```
+
+All validators in the same network should use the same genesis manifest. Startup validates network, protocol version, state schema version, genesis checkpoint hash, and genesis state root.
+
+## snapshot-export
+
+Export a committed state snapshot.
+
+```powershell
+kanari-node snapshot-export `
+  --network devnet `
+  --data-dir "$env:USERPROFILE\.kanari\kanari-db" `
+  --output .\snapshots\devnet-latest.json
+```
+
+Options:
+
+- `--allow-state-root-migration`: explicitly export a legacy database whose checkpoint root differs from the current state root.
+
+Snapshot export opens the persistent store strictly. If RocksDB cannot be opened, export fails instead of silently falling back to memory.
+
+## snapshot-import
+
+Import a snapshot into an empty data directory.
+
+```powershell
+kanari-node snapshot-import `
+  --network devnet `
+  --snapshot .\snapshots\devnet-latest.json `
+  --data-dir .\data\node2
+```
+
+For `testnet` and `mainnet`, pin the checkpoint hash from a trusted channel:
+
+```powershell
+kanari-node snapshot-import `
+  --network testnet `
+  --snapshot .\snapshots\testnet-latest.json `
+  --data-dir .\data\node2 `
+  --expected-checkpoint-hash <CHECKPOINT_HASH>
+```
+
+Devnet allows trusted local imports without the expected hash, but production networks require it.
+
+## validator-backup-export
+
+Export encrypted full-validator recovery data.
+
+```powershell
+$env:KANARI_VALIDATOR_BACKUP_PASSWORD = "use-a-long-secret"
+
+kanari-node validator-backup-export `
+  --network devnet `
+  --data-dir .\data\node1 `
+  --consensus-private-key-file .\consensus-keys\node1-consensus-private-key.key `
+  --consensus-public-keys .\consensus-keys\consensus-public-keys.json `
+  --genesis .\genesis\devnet-genesis.json `
+  --output .\backups\node1.kbackup.json
+```
+
+This is broader than snapshot export. It includes validator recovery material such as state, WAL/recovery files, identity, consensus keys, and genesis.
+
+Stop the validator first when possible.
+
+## validator-backup-import
+
+Restore an encrypted backup into empty directories.
+
+```powershell
+$env:KANARI_VALIDATOR_BACKUP_PASSWORD = "use-a-long-secret"
+
+kanari-node validator-backup-import `
+  --network devnet `
+  --backup .\backups\node1.kbackup.json `
+  --data-dir .\restore\node1 `
+  --recovery-dir .\restore\recovery
+```
+
+The recovery directory receives consensus keys and genesis material. Start the restored node using the recovered files.
+
+## Multi-node scripts
+
+For local 4-node devnet setup, prefer the PowerShell scripts in `crates/kanari-node`:
+
+```powershell
+cd D:\kanari-sdk\crates\kanari-node
+
+.\setup-multi-node.ps1 `
+  -NodeCount 4 `
+  -Network devnet `
+  -ResetSourceData `
+  -ResetReplicaData `
+  -ResetConsensusKeys
+```
+
+The script generates consensus keys, prepares data directories, creates or reuses a shared genesis manifest, and launches node terminals.
+
+## Safety notes
+
+- Do not reuse one private consensus key across validators.
+- Do not commit consensus key files or validator backups.
+- Use encrypted keys for anything beyond throwaway devnet.
+- Keep public RPC behind a gateway/load balancer and firewall.
+- Checkpoint height advances only when transactions commit; idle nodes should not create empty checkpoints.

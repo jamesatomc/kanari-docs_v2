@@ -1,0 +1,61 @@
+---
+title: RPC Gateway and Limits
+description: How to expose Kanari RPC safely and scale reads across nodes.
+---
+
+# RPC Gateway and Limits
+
+Kanari nodes expose an Axum JSON-RPC server. A node serves only the requests it receives; it does not automatically fan out one client request to all validators. For large user traffic, put a real gateway or load balancer in front of multiple RPC nodes.
+
+## Recommended public shape
+
+```text
+Clients / Explorer / SDKs
+        |
+        v
+Gateway / Load Balancer / WAF
+        |
+        +--> RPC Node 1
+        +--> RPC Node 2
+        +--> RPC Node 3
+        +--> RPC Node 4
+```
+
+The gateway should handle:
+
+- TLS termination;
+- per-IP or per-token rate limiting;
+- request body size limits;
+- health checks per RPC node;
+- routing away from lagging or unhealthy nodes.
+
+## Node-side limits
+
+Node-side limits protect the validator process from accidental or hostile load. Heavy VM-backed RPCs are bounded separately from ordinary reads. This avoids a single caller occupying all execution workers.
+
+Public RPC should still be protected by gateway limits. Node-side limits are a last line of defense, not a substitute for edge protection.
+
+## Heavy RPC methods
+
+Treat these as higher cost:
+
+- module verification and publish builders;
+- function call builders;
+- native transfer builders;
+- view function execution.
+
+Views do not commit state, but they can still execute VM code and consume CPU. Limit them like any other compute-heavy API.
+
+## SMT diagnostics
+
+SMT full audit and canonical snapshot comparison are useful for operators and explorers. If exposed publicly, they can be expensive under load. Prefer exposing them through trusted RPC nodes or gateway-protected routes.
+
+## Scaling expectation
+
+For tens or hundreds of thousands of users, scale horizontally:
+
+- add more read-only RPC nodes;
+- keep validator nodes protected;
+- cache stable reads at the gateway;
+- route write/transaction submission to healthy authorities;
+- monitor latency, queue depth, VM permit saturation, and state root convergence.

@@ -1,4 +1,4 @@
 {
   "title": "CLI",
-  "pages": ["kanari-cli", "client", "move", "keytool"]
+  "pages": [ "kanari-node", "kanari-cli", "client", "move", "keytool"]
 }

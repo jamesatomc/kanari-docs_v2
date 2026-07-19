@@ -1,0 +1,91 @@
+---
+title: Multi-node Devnet
+description: Run a current 4-validator devnet with explicit consensus keys and transaction-driven checkpoints.
+---
+
+# Multi-node Devnet
+
+Use the scripts in `crates/kanari-node` for local validator clusters. The recommended fast reset path is:
+
+```powershell
+cd D:\kanari-sdk\crates\kanari-node
+
+.\setup-multi-node.ps1 `
+  -NodeCount 4 `
+  -Network devnet `
+  -RpcHost 0.0.0.0 `
+  -ResetSourceData `
+  -ResetReplicaData `
+  -ResetConsensusKeys
+```
+
+For localhost-only RPC:
+
+```powershell
+.\setup-multi-node.ps1 `
+  -NodeCount 4 `
+  -Network devnet `
+  -RpcHost 127.0.0.1 `
+  -ResetSourceData `
+  -ResetReplicaData `
+  -ResetConsensusKeys
+```
+
+## Consensus keys
+
+Every validator needs:
+
+- one unique private consensus key file;
+- one shared public-key map for the full authority set.
+
+The setup script generates these under:
+
+```text
+%USERPROFILE%\.kanari\consensus-keys
+```
+
+Set `KANARI_CONSENSUS_KEY_PASSWORD` before generating or starting nodes if you want encrypted local consensus key files.
+
+## Ports
+
+The default 4-node layout is:
+
+| Node | P2P | RPC |
+| --- | ---: | ---: |
+| 1 | 19000 | 19001 |
+| 2 | 19010 | 19011 |
+| 3 | 19020 | 19021 |
+| 4 | 19030 | 19031 |
+
+If `-RpcHost 0.0.0.0` is used, connect through the LAN IP, for example:
+
+```text
+http://192.168.1.101:19001/rpc
+```
+
+JSON-RPC requests are POST requests to `/rpc`; opening the base URL in a browser may not show a web page.
+
+## Transaction-driven checkpoints
+
+After reset, height may stay at `0` or the last committed checkpoint until real transactions are submitted. This is expected. Empty time does not create blocks/checkpoints.
+
+To verify the cluster, submit a small transfer and then check:
+
+- all nodes eventually report the same height;
+- pending transactions return to zero on synced authorities;
+- state roots match in explorer/RPC diagnostics.
+
+## Tunable node limits
+
+The node exposes bounded, clamped runtime settings:
+
+| Environment variable | Default | Clamp |
+| --- | ---: | --- |
+| `KANARI_P2P_CHANNEL_CAPACITY` | 128 | 16..4096 |
+| `KANARI_MAX_CONCURRENT_SYNC_MESSAGES` | 64 | 1..1024 |
+| `KANARI_DAG_VERTICES_PER_RESPONSE` | 64 | 1..512 |
+| `KANARI_P2P_MAX_INFLIGHT_CHUNKED_PAYLOADS` | 16 | 1..256 |
+| `KANARI_P2P_MAX_INFLIGHT_CHUNKED_PAYLOADS_PER_PEER` | 4 | 1..64 |
+| `KANARI_P2P_MAX_CONCURRENT_DECOMPRESSIONS` | 8 | 1..128 |
+
+Increase these only after measuring CPU, memory, disk IO, and network pressure.

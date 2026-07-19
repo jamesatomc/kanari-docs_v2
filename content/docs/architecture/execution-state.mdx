@@ -1,0 +1,36 @@
+---
+title: Execution and State
+description: Move runtime, state access tracking, gas, and persistence model.
+---
+
+# Execution and State
+
+Kanari execution is built around Move VM state transitions and object/resource effects. The core engine decides transaction order for committed checkpoints; the runtime applies deterministic effects to persistent state.
+
+## Runtime responsibilities
+
+- Load embedded `0x1` Move stdlib and `0x2` Kanari system modules.
+- Execute Move module publish, upgrade, function calls, native transfers, and view calls.
+- Apply object creates, mutations, transfers, deletions, dynamic fields, events, and gas effects.
+- Persist canonical object/resource state through RocksDB-backed stores.
+- Maintain state roots used by checkpoint verification.
+
+## Framework loading
+
+Release binaries no longer require operators to run with `KANARI_FRAMEWORK_PATH` for normal startup. The runtime build embeds framework bytecode when available, and the loader can use embedded modules before falling back to source-tree discovery.
+
+For development, rebuilding frameworks is still useful after changing Move packages:
+
+```powershell
+cargo run -p kanari -- move build
+```
+
+## Parallel execution status
+
+The runtime contains scheduler and access-set primitives for deterministic conflict handling. The safe production path remains checkpoint-deterministic: validators must commit the same ordered effects and derive the same state root.
+
+When experimenting with higher throughput, use separate sender/object sets where possible. Transactions that mutate the same coin/object must serialize or retry because object versions conflict.
+
+## State root checks
+
+The node stores checkpoint metadata and state roots. RPC and explorer diagnostics can compare roots across nodes. If roots diverge, treat the node as unsafe until it is repaired through snapshot or validator backup recovery.

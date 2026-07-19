@@ -1,0 +1,36 @@
+---
+title: Security Hardening
+description: Current security posture and operator hardening checklist.
+---
+
+# Security Hardening
+
+Kanari is stronger after the recent hardening work, but it should still be treated as pre-mainnet software unless it has passed independent audit, long-running adversarial testing, and production operations rehearsal.
+
+## Improved areas
+
+- Consensus private key material is passed by file path instead of raw key strings in command-line arguments.
+- Mainnet refuses plaintext P2P identity material.
+- Validator backups are encrypted and include full recovery material.
+- Snapshot import/export verifies network, genesis identity, height, hash, and state root.
+- RPC has bounded heavy-VM execution and per-client protection.
+- Mysticeti/DAG sync avoids tiny fixed parent-lookup windows that could break long-running nodes.
+- Idle nodes no longer produce checkpoints without transactions.
+
+## Current caveats
+
+- Consensus signing uses Ed25519. Dilithium support exists elsewhere, but consensus is not yet fully post-quantum.
+- Public RPC must still sit behind a gateway, firewall, or WAF.
+- SMT diagnostic RPCs can be expensive if exposed without rate limits.
+- Formal verification and third-party external audit are still required before high-value mainnet use.
+
+## Operator checklist
+
+- Use unique consensus keys per validator.
+- Never commit private key files.
+- Encrypt local key files with `KANARI_CONSENSUS_KEY_PASSWORD`.
+- Keep `consensus-public-keys.json` identical across the committee.
+- Use a shared genesis manifest for all validators.
+- Stop nodes before strict snapshot/backup export when possible.
+- Keep validator RPC private; expose separate RPC nodes through a gateway.
+- Monitor state root equality across validators.

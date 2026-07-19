@@ -1,31 +1,46 @@
 ---
 title: Welcome to Kanari Docs
-description: Documentation for Kanari Network - Secure File Metadata Blockchain.
+description: Documentation for the current Kanari Network architecture.
 ---
 
 # Kanari Network
 
-Kanari Network is a secure blockchain platform designed for **file metadata storage and verification**. Powered by the **Move Virtual Machine (Move VM)**, it offers robust smart contract capabilities and transparent metadata management in the Web3 ecosystem.
+Kanari Network is a Move-based object blockchain with a Mysticeti-style DAG metadata layer, transaction-driven checkpoints, RocksDB-backed state, and JSON-RPC surfaces for wallets, explorers, and SDKs.
+
+The current system is optimized for deterministic execution and long-running validator operations:
+
+- Checkpoint height advances only when committed transaction work exists.
+- Empty network DAG vertices can be retained and synchronized without minting empty checkpoints.
+- Move execution tracks object/resource state, gas effects, dynamic fields, and deterministic state roots.
+- Nodes can recover with strict snapshots or encrypted full-validator backups.
+- RPC includes bounded heavy-VM execution and per-client protection, while public deployments should still use a real gateway or load balancer.
 
 ## Key Features
 
-- **Secure Metadata Storage**: Anchor file metadata on-chain for reliability.
-- **Move VM Integration**: Leverage secure and verifiable smart contracts.
-- **Ownership Verification**: Track file ownership and history immutably.
-- **Web3 Ready**: Seamlessly bridge file storage solutions like IPFS with on-chain metadata.
+- **Move VM execution**: Object, resource, coin, NFT, dynamic-field, and module operations run through the Kanari Move runtime.
+- **Mysticeti DAG metadata**: Validators exchange DAG vertices and checkpoint evidence through libp2p.
+- **Transaction-driven checkpoints**: No transaction means no new checkpoint height, which avoids idle block production.
+- **Verifiable state**: RocksDB state is anchored by an SMT root and checkpoint metadata.
+- **Operational recovery**: Snapshot export/import and encrypted validator backup/restore cover node recovery paths.
+- **Modern RPC surface**: Axum JSON-RPC serves explorer, CLI, SDK, and gateway deployments.
 
 ## Quick Links
 
 <Cards>
   <Card title="Quick Start" href="/docs/introduction/getting-started" description="Learn how to build and run the Kanari CLI." />
+  <Card title="Architecture" href="/docs/architecture/protocol-stack" description="See the current layered protocol stack and data flow." />
+  <Card title="Multi-node Operations" href="/docs/operations/multi-node" description="Run a local 4-validator devnet and understand checkpoint sync." />
   <Card title="Coin Transfer" href="/docs/guides/transfer" description="Understand how to send and receive tokens." />
   <Card title="API Reference" href="/docs/api/api-reference" description="Integrate Kanari Network into your applications." />
-  <Card title="GitHub" href="https://github.com/kanari-network" description="Explore the source code on GitHub." />
+  <Card title="Security Model" href="/docs/security/hardening" description="Review key handling, RPC exposure, backup, and test coverage." />
 </Cards>
 
-## Why Kanari Network?
+## Current mental model
 
-While solutions like IPFS handle P2P file storage, Kanari Network focuses on anchoring metadata on-chain, ensuring:
-- **Data Integrity**: Proof of file authenticity.
-- **Transparent Versioning**: Track changes and history.
-- **Secure Access Control**: Permissionless and trustless operation.
+One transaction passes through the RPC layer, enters the verified mempool, is selected into checkpoint work, executes in the Move runtime, updates persistent state, records DAG/checkpoint metadata, and becomes queryable through RPC and explorer indexes.
+
+For operators, the most important invariant is simple:
+
+> Checkpoint height means committed chain work, not elapsed time.
+
+That is why idle validators should stop producing new checkpoints until real transactions arrive.

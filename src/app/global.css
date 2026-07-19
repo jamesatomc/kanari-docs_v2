@@ -1283,6 +1283,34 @@ button { font: inherit; }
 .docs-prose .docs-code-block { margin: 0; padding: 19px 58px 19px 19px; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .docs-code-copy { position: absolute; top: 14px; right: 14px; z-index: 1; width: 34px; height: 34px; display: inline-grid; place-items: center; border: 1px solid color-mix(in srgb, var(--inverted-text) 14%, transparent); border-radius: 10px; color: color-mix(in srgb, var(--inverted-text) 82%, transparent); background: color-mix(in srgb, var(--deep-green) 82%, transparent); cursor: pointer; transition: transform 150ms ease, border-color 150ms ease, color 150ms ease, background 150ms ease; }
 .docs-code-copy:hover {transform: translateY(-1px); border-color: color-mix(in srgb, var(--lime) 46%, transparent); color: var(--lime); background: color-mix(in srgb, var(--deep-green) 62%, var(--lime)); }
+.docs-mermaid-frame { margin: 28px 0; overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: color-mix(in srgb, var(--paper) 92%, var(--lime)); box-shadow: 12px 14px 0 color-mix(in srgb, var(--deep-green) 8%, transparent); }
+.docs-mermaid-toolbar { min-height: 56px; padding: 9px 12px 9px 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid var(--line); color: var(--ink); background: color-mix(in srgb, var(--paper) 90%, var(--lime)); }
+.docs-mermaid-toolbar > span { font-size: 11px; font-weight: 950; letter-spacing: 0.16em; text-transform: uppercase; }
+.docs-mermaid-actions { display: inline-flex; align-items: center; gap: 7px; padding: 5px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--paper) 96%, transparent); box-shadow: 0 8px 20px color-mix(in srgb, var(--deep-green) 8%, transparent); }
+.docs-mermaid-control { min-width: 36px; height: 34px; padding: 0 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent); border-radius: 999px; color: var(--ink); background: var(--paper); cursor: pointer; font-size: 11px; font-weight: 950; letter-spacing: 0.04em; line-height: 1; transition: transform 150ms ease, border-color 150ms ease, color 150ms ease, background 150ms ease; }
+.docs-mermaid-control svg { width: 15px; height: 15px; stroke-width: 2.8; color: currentColor; }
+.docs-mermaid-control--zoom { min-width: 58px; color: var(--on-accent); background: var(--lime); border-color: color-mix(in srgb, var(--lime) 72%, var(--ink)); }
+.docs-mermaid-control--copy { min-width: 74px; color: var(--warm-white); background: var(--deep-green); border-color: var(--deep-green); }
+.docs-mermaid-control--copy span { color: inherit !important; fill: currentColor !important; font-size: 11px; letter-spacing: 0.06em; }
+.docs-mermaid-control:hover:not(:disabled) { transform: translateY(-1px); border-color: color-mix(in srgb, var(--purple-strong) 60%, var(--line)); background: color-mix(in srgb, var(--lime) 42%, var(--paper)); }
+.docs-mermaid-control--copy:hover:not(:disabled) { color: var(--on-accent); background: var(--lime); border-color: var(--lime); }
+.docs-mermaid-control:disabled { opacity: 0.45; cursor: not-allowed; }
+.docs-mermaid-scroll { min-height: 420px; max-height: 78vh; overflow: auto; padding: 26px; background: radial-gradient(color-mix(in srgb, var(--ink) 10%, transparent) 0.7px, transparent 0.8px); background-size: 6px 6px; }
+.docs-mermaid-canvas { width: max-content; min-width: 100%; transform-origin: top left; transition: transform 180ms ease; }
+.docs-mermaid-canvas svg { width: max-content; min-width: 960px; max-width: none; height: auto; display: block; margin: 0 auto; }
+.docs-mermaid-canvas .node rect,
+.docs-mermaid-canvas .node polygon,
+.docs-mermaid-canvas .node circle,
+.docs-mermaid-canvas .node ellipse { filter: drop-shadow(0 8px 12px color-mix(in srgb, var(--deep-green) 10%, transparent)); }
+.docs-mermaid-canvas .nodeLabel,
+.docs-mermaid-canvas .edgeLabel,
+.docs-mermaid-canvas .cluster-label,
+.docs-mermaid-canvas .label,
+.docs-mermaid-canvas foreignObject,
+.docs-mermaid-canvas foreignObject div,
+.docs-mermaid-canvas span { color: var(--ink) !important; fill: var(--ink) !important; }
+.docs-mermaid-canvas .edgeLabel { background: color-mix(in srgb, var(--paper) 84%, transparent) !important; border-radius: 8px; }
+.docs-mermaid-error { margin: 0; padding: 18px; overflow: auto; color: #b42318; background: color-mix(in srgb, #fef3f2 90%, var(--paper)); }
 .docs-prose img { max-width: 100%; height: auto; margin: 24px auto; display: block; border: 1px solid var(--line); border-radius: 18px; }
 .docs-prose del { opacity: 0.64; }
 .mdx-card-grid { margin: 24px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -1397,6 +1425,21 @@ button { font: inherit; }
 .dark .docs-prose th { color: var(--on-accent); background: var(--lime); }
 .dark .docs-prose code { border-color: var(--line); color: var(--purple-strong); background: color-mix(in srgb, var(--purple) 12%, transparent); }
 .dark .docs-prose pre code { color: inherit; background: transparent; }
+.dark .docs-mermaid-frame { background: color-mix(in srgb, var(--paper) 82%, var(--deep-green)); box-shadow: 12px 14px 0 color-mix(in srgb, #000 24%, transparent); }
+.dark .docs-mermaid-toolbar { background: color-mix(in srgb, var(--deep-green) 86%, var(--paper)); }
+.dark .docs-mermaid-actions { background: color-mix(in srgb, var(--deep-green) 80%, #000); }
+.dark .docs-mermaid-control { border-color: color-mix(in srgb, var(--warm-white) 28%, transparent); color: var(--warm-white); background: color-mix(in srgb, var(--paper) 92%, #000); }
+.dark .docs-mermaid-control--zoom { color: var(--on-accent); background: var(--lime); border-color: var(--lime); }
+.dark .docs-mermaid-control--copy { color: var(--on-accent); background: var(--lime); border-color: var(--lime); }
+.dark .docs-mermaid-scroll { background-color: color-mix(in srgb, var(--deep-green) 78%, #000); background-image: radial-gradient(color-mix(in srgb, var(--warm-white) 9%, transparent) 0.7px, transparent 0.8px); }
+.dark .docs-mermaid-canvas .nodeLabel,
+.dark .docs-mermaid-canvas .edgeLabel,
+.dark .docs-mermaid-canvas .cluster-label,
+.dark .docs-mermaid-canvas .label,
+.dark .docs-mermaid-canvas foreignObject,
+.dark .docs-mermaid-canvas foreignObject div,
+.dark .docs-mermaid-canvas span { color: var(--warm-white) !important; fill: var(--warm-white) !important; text-shadow: 0 1px 1px #000; }
+.dark .docs-mermaid-canvas .edgeLabel { background: color-mix(in srgb, var(--deep-green) 84%, transparent) !important; }
 .dark .mdx-card { border-color: var(--line); background: color-mix(in srgb, var(--ink) 4.5%, transparent); }
 .dark .mdx-card:hover { background: color-mix(in srgb, var(--ink) 8.5%, transparent); }
 .dark .mdx-card strong { color: var(--ink); }

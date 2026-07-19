@@ -1,0 +1,65 @@
+---
+title: Snapshot and Validator Backup
+description: Recovery paths for state snapshots and full validator backups.
+---
+
+# Snapshot and Validator Backup
+
+Kanari has two recovery tools with different scopes.
+
+## Snapshot export/import
+
+Snapshots are for chain state transfer. They include checkpoint/state information and are suitable for bootstrapping or repairing a replica from a trusted source.
+
+Export from a stopped or trusted source data directory:
+
+```powershell
+cargo run -p kanari-node -- snapshot-export `
+  --network devnet `
+  --data-dir "$env:USERPROFILE\.kanari\kanari-db" `
+  --output .\snapshots\devnet-latest.json
+```
+
+Import verifies snapshot hash, genesis identity, checkpoint height, and state root before writing. It refuses to overwrite non-empty target data directories.
+
+## Full validator backup
+
+Validator backup is for disaster recovery of a validator. It is encrypted and covers the recovery material needed to restore the validator host, including state, WAL/recovery files, node identity, keys, and genesis material.
+
+Set a backup password:
+
+```powershell
+$env:KANARI_VALIDATOR_BACKUP_PASSWORD = "use-a-long-secret"
+```
+
+Export:
+
+```powershell
+kanari-node validator-backup-export `
+  --network devnet `
+  --data-dir C:\kanari\validator1 `
+  --recovery-dir C:\Users\you\.kanari `
+  --output C:\kanari\backups\validator1.kbackup.json
+```
+
+Import into empty directories:
+
+```powershell
+kanari-node validator-backup-import `
+  --network devnet `
+  --backup C:\kanari\backups\validator1.kbackup.json `
+  --data-dir C:\kanari\restore\validator1 `
+  --recovery-dir C:\kanari\restore\recovery
+```
+
+## Which one should I use?
+
+| Case | Use |
+| --- | --- |
+| New follower needs current state | Snapshot |
+| Devnet reset/migration | Snapshot |
+| Validator host disaster recovery | Encrypted validator backup |
+| Consensus identity/key restoration | Encrypted validator backup |
+| Public historical archive | Dedicated archival process, not validator hot path |
+
+Always test restore on a non-production node before relying on a backup plan.

@@ -1,0 +1,34 @@
+---
+title: Gas Model
+description: Kanari gas model versions and the active selector.
+---
+
+# Gas Model
+
+Kanari keeps gas policy implementations in `crates/kanari-types/src/gas_v*.rs` and selects the active policy from `crates/kanari-types/src/gas.rs`.
+
+The current selector is:
+
+```rust
+select_gas_impl!(v2);
+```
+
+Changing only this selector switches the active exported gas policy for consumers that import through `kanari_types::gas` or crate-level re-exports.
+
+## Versions
+
+| Version | Purpose | Pricing behavior |
+| --- | --- | --- |
+| `v1` | Baseline gas model | Sui-like storage accounting and rebate behavior. |
+| `v2` | Free-storage experiment | Storage-related charging is disabled/zeroed for cheaper dev/test execution. |
+| `v3` | Discount model | Effective gas price is `requested / 10`. |
+| `v3_1` | Milder discount model | Effective gas price is `requested / 5`. |
+
+Because prices are integer Mist values, discounted versions round down. For example, v3 turns requested prices below `10` into an effective price of `0`; v3.1 turns requested prices below `5` into `0`.
+
+## Operational guidance
+
+- Use `v2` for cheap devnet/testnet experiments where storage pricing is intentionally disabled.
+- Use `v3` only if you want a very aggressive tenfold discount.
+- Use `v3_1` when you want cheaper-than-v1 pricing but less rounding-to-zero than v3.
+- Do not change the active gas selector on only one validator in a shared network. All validators must run the same binary and gas policy to keep execution deterministic.

@@ -5,16 +5,46 @@ description: Command-line interface for interacting with the Kanari Network.
 
 # Kanari CLI
 
-The `kanari` CLI is the primary tool for managing wallets, transferring tokens, and interacting with Move packages on the Kanari Network.
+The `kanari` CLI is the primary tool for managing wallets, sending transactions, querying RPC state, and working with Move packages on Kanari Network.
 
 ## Installation
 
 Ensure you have built the project and the `kanari` binary is in your PATH. See the [Compile and install](/docs/introduction/getting-started) guide for details.
 
+## Top-level command groups
+
+```bash
+kanari <COMMAND>
+```
+
+| Group | Purpose |
+| --- | --- |
+| `client` | Send transactions, query balances/objects/transactions, manage RPC environments, and call view functions. |
+| `move` | Build, test, document, publish, verify, and call Move packages/functions. |
+| `keytool` | Create, import, select, inspect, and list encrypted local wallets. |
+
+Node operation commands live in the separate `kanari-node` binary. See [Kanari Node CLI](/docs/cli/kanari-node).
+
+## RPC endpoint resolution
+
+Most `client` and on-chain `move` commands accept:
+
+```bash
+--rpc <RPC_ENDPOINT>
+```
+
+If `--rpc` is omitted, the CLI uses the active environment from `kanari client envs`. If no active environment is configured, it falls back to:
+
+```text
+http://127.0.0.1:6767
+```
+
+Use the exact endpoint your node is serving. Some deployments expose JSON-RPC at the host root, while gateway/explorer deployments may expose `/rpc`.
+
 ## Commands
 
 ### client
-Client operations (transfer, faucet, burn, stats, balance, account, envs).
+Client operations: native KANARI transfer, custom token transfer, faucet, burn, stats, balances, owner/object queries, transaction lookup, view calls, stress testing, and environment management.
 
 For a detailed guide on blockchain and token operations, see the [Client Operations](/docs/cli/client) page.
 
@@ -38,12 +68,16 @@ kanari move build
 ---
 
 ### keytool
-Keytool operations (create, load, list, info, add wallets).
+Keytool operations: create, load/select, list, inspect, and import wallets.
 
 For a detailed guide on wallet and key management, see the [Keytool Operations](/docs/cli/keytool) page.
 
 Example:
 ```bash
-kanari keytool create-wallet --password <YOUR_PASSWORD>
+kanari keytool create --password <YOUR_PASSWORD>
 ```
+
+<Callout type="warning" title="Passwords">
+  Passing passwords on the command line is convenient for local testing but can be visible in shell history or process listings. Prefer prompts or secret management for production workflows.
+</Callout>
 

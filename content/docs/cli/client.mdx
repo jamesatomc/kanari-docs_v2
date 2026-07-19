@@ -1,132 +1,218 @@
 ---
 title: Client Operations
-description: Interact with the Kanari Network blockchain, manage tokens, and query account information.
+description: Send transactions, query state, and manage RPC environments with the Kanari CLI.
 ---
 
 # Client Operations
 
-The `client` command group provides tools for interacting with the Kanari Network blockchain, including token transfers, faucet requests, and querying account or network status.
-
-## Usage
+The `client` command group talks to a running Kanari RPC node.
 
 ```bash
 kanari client <COMMAND>
 ```
 
----
+Most commands accept `--rpc <RPC_ENDPOINT>`. If omitted, the CLI uses the active environment from `kanari client envs`, then falls back to `http://127.0.0.1:6767`.
 
-## Commands
+## Transaction commands
 
 ### transfer
-Transfer Kanari tokens to another address.
 
-**Usage:**
+Transfer native KANARI coins.
+
 ```bash
-kanari client transfer [OPTIONS] --to <TO> --amount <AMOUNT> --password <PASSWORD>
+kanari client transfer \
+  --to <RECIPIENT_ADDRESS> \
+  --amount <KANARI_AMOUNT> \
+  --password <PASSWORD>
 ```
 
-**Options:**
-- `-f, --from <FROM>`: Sender wallet address (optional). If omitted, uses selected wallet in config.
-- `-t, --to <TO>`: Recipient address (required).
-- `-a, --amount <AMOUNT>`: Amount in Kanari (will be converted to Mist).
-- `-p, --password <PASSWORD>`: Wallet password.
-- `--rpc <RPC_ENDPOINT>`: RPC endpoint URL.
+Options:
 
----
+- `-f, --from <FROM>`: sender wallet address. If omitted, uses the selected wallet.
+- `-t, --to <TO>`: recipient address.
+- `-a, --amount <AMOUNT>`: human KANARI amount; converted to Mist internally.
+- `-p, --password <PASSWORD>`: wallet password.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint override.
 
-### faucet
-Request tokens from the Dev faucet for testing.
+Native transfer is a Move object transaction. It requires a mutable transfer coin and a separate gas coin object.
 
-**Usage:**
+### token-transfer
+
+Transfer a custom token type.
+
 ```bash
-kanari client faucet [OPTIONS] --amount <AMOUNT>
+kanari client token-transfer \
+  --to <RECIPIENT_ADDRESS> \
+  --token <TOKEN_TYPE> \
+  --amount <RAW_AMOUNT> \
+  --password <PASSWORD>
 ```
 
-**Options:**
-- `-t, --to <TO>`: Recipient address (optional). If omitted, uses configured `active_address`.
-- `-a, --amount <AMOUNT>`: Amount in Kanari.
-- `--dev-address <DEV_ADDRESS>`: Dev wallet address override (optional).
-- `--dev-password <DEV_PASSWORD>`: Dev wallet password (optional; falls back to `KANARI_PASSWORD` env).
-- `--rpc <RPC_ENDPOINT>`: RPC endpoint URL.
+Options:
 
----
+- `-f, --from <FROM>`: sender wallet address. If omitted, uses the selected wallet.
+- `-t, --to <TO>`: recipient address.
+- `--token <TOKEN_TYPE>`: full Move token type, for example `0x2::kanari::KANARI`.
+- `--amount <RAW_AMOUNT>`: raw token units.
+- `-p, --password <PASSWORD>`: wallet password.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint override.
 
 ### burn
-Burn Kanari tokens from a wallet (permanently remove from total supply).
 
-**Usage:**
+Burn native KANARI from a wallet.
+
 ```bash
-kanari client burn [OPTIONS] --amount <AMOUNT> --password <PASSWORD>
+kanari client burn --amount <KANARI_AMOUNT> --password <PASSWORD>
 ```
 
-**Options:**
-- `-f, --from <FROM>`: Wallet address to burn from (optional). If omitted, uses selected wallet in config.
-- `-a, --amount <AMOUNT>`: Amount in Kanari to burn.
-- `-p, --password <PASSWORD>`: Wallet password.
-- `--rpc <RPC_ENDPOINT>`: RPC endpoint URL.
+Options:
 
----
+- `-f, --from <FROM>`: wallet address. If omitted, uses the selected wallet.
+- `-a, --amount <AMOUNT>`: human KANARI amount.
+- `-p, --password <PASSWORD>`: wallet password.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint override.
+
+### faucet
+
+Request devnet tokens.
+
+```bash
+kanari client faucet --amount <KANARI_AMOUNT>
+```
+
+Options:
+
+- `-t, --to <TO>`: recipient address. If omitted, uses the active wallet.
+- `-a, --amount <AMOUNT>`: human KANARI amount.
+- `--dev-address <DEV_ADDRESS>`: faucet/dev wallet override.
+- `--dev-password <DEV_PASSWORD>`: faucet/dev wallet password; falls back to `KANARI_PASSWORD`.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint override.
+
+## Query commands
 
 ### stats
-Show overall blockchain statistics.
 
-**Usage:**
+Show chain-level stats from the selected RPC node.
+
 ```bash
-kanari client stats [OPTIONS]
+kanari client stats --rpc http://127.0.0.1:6767
 ```
-
-**Options:**
-- `--rpc <RPC_ENDPOINT>`: RPC endpoint URL.
-
----
 
 ### balance
-Show token balance for a specific address.
 
-**Usage:**
+Show token balances for an owner.
+
 ```bash
-kanari client balance [OPTIONS] --address <ADDRESS>
+kanari client balance --owner <ADDRESS>
+kanari client balance --owner <ADDRESS> --detailed
 ```
 
-**Options:**
-- `--address <ADDRESS>`: Address to query.
-- `-d, --detailed`: Show detailed information.
-- `--rpc <RPC_ENDPOINT>`: RPC endpoint URL.
+Options:
 
----
+- `--owner <ADDRESS>`: owner address. If omitted, uses the selected wallet.
+- `-d, --detailed`: include token metadata when available.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint override.
 
-### account
-Account-related operations.
+### objects
 
-**Usage:**
+List objects owned by an address.
+
 ```bash
-kanari client account <COMMAND>
+kanari client objects --owner <ADDRESS>
+kanari client objects --owner <ADDRESS> --type "0x2::coin::Coin<0x2::kanari::KANARI>" --detailed
 ```
 
-**Subcommands:**
-- `get`: Get account info (address, balance, modules, token balances).
-  ```bash
-  kanari client account get <ADDRESS>
-  ```
+Options:
 
----
+- `--owner <ADDRESS>`: owner address. If omitted, uses the selected wallet.
+- `--type <OBJECT_TYPE>`: optional object type filter.
+- `-d, --detailed`: show extra object fields.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint override.
 
-### envs
-Manage configured environments and RPC endpoints.
+### owner get
 
-**Usage:**
+Print full owner state as JSON.
+
 ```bash
-kanari client envs <COMMAND>
+kanari client owner get --owner <ADDRESS>
 ```
 
-**Subcommands:**
-- `list`: List all configured environments.
-- `switch`: Switch to a different environment.
-- `new`: Add a new environment.
-- `remove`: Remove an environment.
+### tx
 
----
+Show transaction details by hash.
 
-## Options
+```bash
+kanari client tx --hash <TX_HASH>
+kanari client tx --hash <TX_HASH> --json
+```
 
-- `-h, --help`: Print help information for the `client` command or a specific subcommand.
+Options:
+
+- `--hash <TX_HASH>`: transaction hash.
+- `--json`: print the full RPC response as JSON.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint override.
+
+### view
+
+Call a Move view function without submitting a transaction.
+
+```bash
+kanari client view \
+  --package <PACKAGE_ADDRESS> \
+  --module <MODULE> \
+  --function <FUNCTION> \
+  --type-arg <TYPE_ARG> \
+  --arg <HEX_BCS_ARG>
+```
+
+Options:
+
+- `--package <ADDRESS>`: package address.
+- `--module <MODULE>`: module name.
+- `--function <FUNCTION>`: function name.
+- `-t, --type-arg <TYPE_ARG>`: repeatable type arguments.
+- `-a, --arg <HEX>`: repeatable BCS-serialized hex arguments.
+- `--owned-input OWNER,OBJECT_ID,VERSION,DIGEST`: explicit owned object input.
+- `--shared-input OBJECT_ID,VERSION,DIGEST`: explicit shared object input.
+- `--immutable-input OBJECT_ID,VERSION,DIGEST`: explicit immutable object input.
+- `--raw`: print raw JSON result.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint override.
+
+Views are read-only and do not create checkpoints, but they still execute VM work on the RPC node.
+
+## Load testing
+
+### stress-test
+
+Send many native transfers from one wallet for local testing.
+
+```bash
+kanari client stress-test \
+  --to <RECIPIENT_ADDRESS> \
+  --amount 0.1 \
+  --count 1000 \
+  --password <PASSWORD>
+```
+
+Useful options:
+
+- `-f, --from <FROM>`: sender wallet address. If omitted, uses the selected wallet.
+- `--faucet`: request dev faucet funds first.
+- `--faucet-amount <AMOUNT>`: faucet amount override.
+- `--dev-address <ADDRESS>` / `--dev-password <PASSWORD>`: faucet wallet overrides.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint override.
+
+For high throughput tests, use many independent sender/object lanes. Reusing the same coin object creates object-version conflicts and forces retries.
+
+## Environment commands
+
+Manage named RPC endpoints.
+
+```bash
+kanari client envs list
+kanari client envs new local http://127.0.0.1:6767
+kanari client envs switch local
+kanari client envs remove local
+```
+
+The selected environment is used by commands that do not pass `--rpc`.

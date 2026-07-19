@@ -5,5 +5,5 @@
     "icon": "book",
     "title": "Kanari Docs"
   },
-  "pages": ["index", "introduction", "cli", "api", "guides"]
+  "pages": ["index", "introduction", "architecture", "operations", "security", "cli", "api", "guides"]
 }

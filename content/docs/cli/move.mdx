@@ -1,121 +1,134 @@
 ---
 title: Move Development
-description: Manage Move packages, tools, and smart contracts on Kanari Network.
+description: Build, test, publish, verify, and call Move packages on Kanari Network.
 ---
 
 # Move Development
 
-Manage Move packages and tools directly from the Kanari CLI.
-
-## Usage
+The `move` command group wraps Move package tooling and on-chain Kanari RPC flows.
 
 ```bash
 kanari move <COMMAND>
 ```
 
----
-
-## Commands
+## Local package commands
 
 ### build
-Build the current Move package in the working directory.
 
-**Usage:**
+Build the current Move package.
+
 ```bash
 kanari move build
 ```
 
+The command reroots to the nearest Move package root before compiling.
+
 ### new
+
 Create a new Move package skeleton.
 
-**Usage:**
 ```bash
 kanari move new <NAME>
 ```
 
-**Arguments:**
-- `<NAME>`: The name of the package to be created.
-
 ### test
-Run unit tests for the Move package.
 
-**Usage:**
+Run Move unit tests.
+
 ```bash
-kanari move test [OPTIONS] [filter]
+kanari move test [OPTIONS] [FILTER]
 ```
 
-**Arguments:**
-- `[filter]`: An optional filter string to determine which unit tests to run. A unit test will be run only if it contains this string in its fully qualified (`<addr>::<module_name>::<fn_name>`) name.
+Common options:
 
-**Options:**
-- `-i, --gas-limit <gas-limit>`: Bound the amount of gas used by any one test.
-- `-l, --list`: List all tests.
-- `-t, --threads <num-threads>`: Number of threads to use for running tests [default: 8].
-- `-s, --statistics [<report-statistics>]`: Report test statistics at the end of testing. CSV report generated if 'csv' passed.
-- `--stackless`: Use the stackless bytecode interpreter to run the tests and cross check its results with the execution result from Move VM.
-- `--verbose`: Verbose mode.
-- `--coverage`: Collect coverage information for later use with the various `move coverage` subcommands. Currently supported only in debug builds.
+- `-i, --gas-limit <GAS_LIMIT>`: maximum gas used by one test.
+- `-l, --list`: list tests.
+- `-t, --threads <THREADS>`: test runner threads; default is `8`.
+- `-s, --statistics [<MODE>]`: report test statistics; `csv` writes CSV output.
+- `--stackless`: cross-check with the stackless bytecode interpreter.
+- `--verbose`: verbose output.
+- `--coverage`: collect coverage in debug builds.
+
+Kanari registers both Move stdlib natives and Kanari system natives for tests.
 
 ### docgen
-Generate documentation for the Move package.
 
-**Usage:**
+Generate Move package documentation.
+
 ```bash
 kanari move docgen
 ```
 
-### publish
-Publish the Move module to the blockchain.
+## RPC-backed commands
 
-**Usage:**
+These commands talk to a node. They accept `--rpc <RPC_ENDPOINT>`; if omitted, the active CLI environment is used.
+
+### publish
+
+Build and publish modules whose module address matches the selected sender wallet.
+
 ```bash
-kanari move publish [OPTIONS] --sender <SENDER>
+kanari move publish --package-path <PACKAGE_PATH>
 ```
 
-**Options:**
-- `--package-path <PACKAGE_PATH>`: Path to the Move package (defaults to current directory).
-- `--gas-limit <GAS_LIMIT>`: Gas limit for the transaction [default: 100000].
-- `--gas-price <GAS_PRICE>`: Gas price in Mist [default: 100].
-- `--sender <SENDER>`: Account address publishing the module (from wallet).
-- `--password <PASSWORD>`: Wallet password (required for signing).
-- `--rpc <RPC_ENDPOINT>`: RPC endpoint.
+Options:
+
+- `--package-path <PATH>`: package path. Defaults to the current package root.
+- `--gas-limit <GAS_LIMIT>`: override default transaction gas limit.
+- `--gas-price <GAS_PRICE>`: override default transaction gas price.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint override.
+
+The sender is the selected wallet. If no password is passed through the command, the CLI prompts for the wallet password.
 
 ### verify
-Verify Move module bytecode locally using an RPC endpoint.
 
-**Usage:**
+Verify Move module bytecode through the RPC verification path.
+
 ```bash
-kanari move verify
+kanari move verify --file <MODULE_BYTECODE_PATH>
+kanari move verify --package-path <PACKAGE_PATH>
 ```
+
+Options:
+
+- `--file <PATH>`: compiled `.mv` module file.
+- `--package-path <PATH>`: build a Move package and verify the first compiled module.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint override.
+
+Either `--file` or `--package-path` is required.
 
 ### call
-Call a specific Move function on the blockchain.
 
-**Usage:**
+Submit an on-chain Move function call.
+
 ```bash
-kanari move call [OPTIONS] --package <PACKAGE> --module <MODULE> --function <FUNCTION> --sender <SENDER>
+kanari move call \
+  --package <PACKAGE_ADDRESS> \
+  --module <MODULE> \
+  --function <FUNCTION> \
+  --type-args <TYPE_ARG> \
+  --args <ARG_1> <ARG_2>
 ```
 
-**Options:**
-- `--package <PACKAGE>`: Package address (hex). Example: `0x840512ff...`
-- `--module <MODULE>`: Module name (required).
-- `--function <FUNCTION>`: Function name in module.
-- `--type-args <TYPE_ARGS>`: Type arguments to the generic function being called. All must be specified. Example: `0x1::coin::KANARI`
-- `--args [<ARGS>...]`: Simplified ordered args. ObjectIDs, Addresses must be hex strings. Example: `0x123 1000 true`
-- `--sender <SENDER>`: Sender/Caller address (from wallet).
-- `--password <PASSWORD>`: Wallet password (required for signing).
-- `--gas-limit <GAS_LIMIT>`: Gas limit for the transaction [default: 100000].
-- `--gas-price <GAS_PRICE>`: Gas price in Mist [default: 100].
-- `--rpc <RPC_ENDPOINT>`: RPC endpoint.
+Options:
 
-**Examples:**
+- `--package <ADDRESS>`: package address only. The combined `address::module` form is rejected.
+- `--module <MODULE>`: module name.
+- `--function <FUNCTION>`: function name.
+- `--type-args <TYPE_ARGS>`: repeatable generic type arguments.
+- `--args [<ARGS>...]`: simplified ordered arguments.
+- `--gas-limit <GAS_LIMIT>`: override default transaction gas limit.
+- `--gas-price <GAS_PRICE>`: override default transaction gas price.
+- `--rpc <RPC_ENDPOINT>`: RPC endpoint override.
+
+The sender is the selected wallet. The CLI prompts for the wallet password when signing is required.
+
+Example:
+
 ```bash
-kanari move call --package 0x1 --module coin --function transfer --args "address:0x2" "u64:1000" --sender 0x1
-kanari move call --package 0x1 --module game --function start --args "[\"0x1\",\"0x2\"]" --sender 0x1 --password mypass
+kanari move call \
+  --package 0x2 \
+  --module coin \
+  --function transfer \
+  --args 0xRECIPIENT 1000
 ```
-
----
-
-## Options
-
-- `-h, --help`: Print help information for the `move` command or a specific subcommand.

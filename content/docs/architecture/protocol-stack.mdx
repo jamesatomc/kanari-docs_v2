@@ -1,0 +1,117 @@
+---
+title: Protocol Stack
+description: Current Kanari layered architecture and component relationships.
+---
+
+# Protocol Stack
+
+Kanari is organized as a layered Move/object chain. Applications submit signed work through JSON-RPC; nodes gossip transactions and checkpoints; the core engine builds deterministic checkpoint work; the Move runtime executes state transitions; RocksDB and SMT roots persist the canonical state.
+
+```mermaid
+flowchart TB
+    subgraph L0["Application Layer"]
+        EXPLORER["kanariexplorer"]
+        CLI["kanari CLI"]
+        PAY["sdk/kanari_pay"]
+        WALLET["sdk/wallet"]
+    end
+
+    subgraph L1["RPC / API Layer"]
+        RPC_CLIENT["kanari-rpc-client"]
+        RPC_API["kanari-rpc-api<br/>methods + response types"]
+        RPC_SERVER["kanari-rpc-server<br/>Axum JSON-RPC"]
+    end
+
+    subgraph L2["Node Layer"]
+        NODE["kanari-node"]
+        P2P["libp2p gossip<br/>transactions + checkpoints"]
+        SYNC["checkpoint / DAG sync"]
+        BACKUP["validator backup / restore"]
+    end
+
+    subgraph L3["Core Chain Layer"]
+        ENGINE["kanari-core::BlockchainEngine"]
+        MEMPOOL["verified mempool"]
+        CHECKPOINT["checkpoint builder"]
+        DAG["Mysticeti DAG metadata"]
+        INDEX["transaction + object indexes"]
+    end
+
+    subgraph L4["Execution Layer"]
+        RUNTIME["kanari-move-runtime-v1"]
+        VM["Move VM"]
+        SCHED["parallel scheduler"]
+        NATIVE["kanari-system-natives"]
+    end
+
+    subgraph L5["Data / Crypto Layer"]
+        TYPES["kanari-types<br/>tx, object, gas, event"]
+        CRYPTO["kanari-crypto<br/>keys, signatures, hashing"]
+        SMT["smt<br/>Sparse Merkle Tree"]
+        DB["RocksDB / persistent stores"]
+        FRAMEWORKS["kanari-frameworks<br/>0x1 + 0x2 Move modules"]
+    end
+
+    EXPLORER --> RPC_CLIENT
+    CLI --> RPC_CLIENT
+    PAY --> RPC_CLIENT
+    WALLET --> RPC_CLIENT
+
+    RPC_CLIENT --> RPC_API
+    RPC_API --> RPC_SERVER
+    RPC_SERVER --> ENGINE
+
+    NODE --> RPC_SERVER
+    NODE --> P2P
+    P2P --> SYNC
+    SYNC --> ENGINE
+
+    ENGINE --> MEMPOOL
+    MEMPOOL --> CHECKPOINT
+    CHECKPOINT --> DAG
+    CHECKPOINT --> INDEX
+    ENGINE --> RUNTIME
+
+    RUNTIME --> VM
+    RUNTIME --> SCHED
+    VM --> NATIVE
+    VM --> FRAMEWORKS
+
+    ENGINE --> TYPES
+    ENGINE --> CRYPTO
+    ENGINE --> SMT
+    ENGINE --> DB
+    RUNTIME --> DB
+    DAG --> DB
+```
+
+## Layer responsibilities
+
+| Layer | Responsibility |
+| --- | --- |
+| Application | Explorer, CLI, wallets, and payment SDKs create and inspect user activity. |
+| RPC / API | Axum JSON-RPC validates request shape, applies concurrency limits, and returns typed responses. |
+| Node | Runs RPC, libp2p gossip, checkpoint sync, identity, consensus keys, and backup tooling. |
+| Core chain | Owns mempool, checkpoint production, state roots, transaction/object indexes, and DAG metadata. |
+| Execution | Runs Move VM calls, native functions, scheduler logic, and state changes. |
+| Data / crypto | Stores canonical state, object records, SMT roots, framework modules, signatures, and hashes. |
+
+## Entity relationship overview
+
+```mermaid
+erDiagram
+    AUTHORITY ||--o{ DAG_VERTEX : produces
+    DAG_VERTEX ||--o{ TRANSACTION : references
+    CHECKPOINT ||--o{ TRANSACTION : commits
+    CHECKPOINT ||--o{ OBJECT_CHANGE : records
+    CHECKPOINT ||--|| STATE_ROOT : anchors
+    TRANSACTION ||--o{ OBJECT_CHANGE : emits
+    TRANSACTION ||--o{ EVENT : emits
+    OBJECT ||--o{ OBJECT_CHANGE : versioned_by
+    ACCOUNT ||--o{ OBJECT : owns
+    ACCOUNT ||--o{ TRANSACTION : signs
+    MOVE_MODULE ||--o{ TRANSACTION : called_by
+    GAS_POLICY ||--o{ TRANSACTION : prices
+```
+
+This diagram is a documentation view of the runtime flow, not a database schema. The authoritative data lives in the Rust types, RocksDB stores, checkpoints, and SMT state root.

@@ -1,0 +1,38 @@
+---
+title: Testing and Audit Coverage
+description: What is covered by current tests and what still needs long-running validation.
+---
+
+# Testing and Audit Coverage
+
+The repository now includes stronger regression tests around checkpoint/DAG behavior, RPC handling, state changes, gas models, object management, and validator backup.
+
+## Covered locally
+
+- Transaction-driven checkpoint behavior.
+- DAG vertex deduplication and retained-store lookup.
+- Snapshot state-root validation paths.
+- Encrypted validator backup round trips.
+- RPC method parsing and transaction builder validation.
+- Native transfer object/gas separation.
+- Move runtime object/state/gas/supply behaviors.
+- Access-set and scheduler conflict primitives.
+
+## Long-running tests to run before production
+
+- 4-node root-consistency soak with restarts.
+- High-throughput transfer load with many independent sender/object sets.
+- Conflict-heavy transfer load with same-object retries.
+- Byzantine peer simulation: malformed DAG vertices, duplicate payloads, stale checkpoints, and inconsistent roots.
+- RPC DoS simulation: heavy views/builders, large bodies, bursty per-client traffic.
+- Fuzzing around transaction parsing, object IDs, dynamic fields, snapshot import, and P2P chunk handling.
+
+## Suggested soak command
+
+Use the repository soak script as the starting point:
+
+```powershell
+.\scripts\run-adversarial-soak.ps1
+```
+
+Run it in a clean devnet first, then gradually increase duration, node count, and transaction pressure.

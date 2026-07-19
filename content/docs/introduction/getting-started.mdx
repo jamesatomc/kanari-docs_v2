@@ -5,7 +5,7 @@ description: Learn how to set up and run the Kanari Network CLI.
 
 # Quick Start
 
-Welcome to Kanari Network. This guide will walk you through the process of building and running the Kanari CLI on your local machine.
+Welcome to Kanari Network. This guide walks you through building the workspace, running a local node, and using the Kanari CLI against the current JSON-RPC stack.
 
 ## Prerequisites
 
@@ -33,16 +33,14 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 #### Clone the repository
 
 ```bash
-git clone git clone https://github.com/kanari-network/kanari-sdk.git
+git clone https://github.com/kanari-network/kanari-sdk.git
 ```
 
-#### Compile and install kanari CLI
-
-kanari and kanari-node
+#### Compile the Kanari CLI and node
 
 ```bash
 cd kanari-sdk
-cargo build --release
+cargo build --release -p kanari -p kanari-node
 
 # kanari
 cp target/release/kanari ~/.cargo/bin
@@ -76,17 +74,33 @@ rustc --version
 git clone https://github.com/kanari-network/kanari-sdk.git
 ```
 
-#### Compile and install Kari
+#### Compile the Kanari CLI and node
 
 ```powershell
 cd kanari-sdk
-cargo build --release
+cargo build --release -p kanari -p kanari-node
 
 # kanari
-cp target/release/kanari ~/.cargo/bin
+Copy-Item target\release\kanari.exe $env:USERPROFILE\.cargo\bin\
 # kanari-node
-cp target/release/kanari-node ~/.cargo/bin
+Copy-Item target\release\kanari-node.exe $env:USERPROFILE\.cargo\bin\
 ```
+
+## Run a local node
+
+For a local single-node devnet:
+
+```powershell
+kanari-node local
+```
+
+The local RPC endpoint is:
+
+```text
+http://127.0.0.1:6767/rpc
+```
+
+The runtime can load embedded framework bytecode from the binary. You should not need to set `KANARI_FRAMEWORK_PATH` for normal node startup.
 
 ## Running the CLI
 
@@ -97,10 +111,28 @@ Once built, you can use the CLI to interact with the network.
 To see the list of available wallets and their balances:
 
 ```bash
-cargo run -p kanari -- list-wallets
+cargo run -p kanari -- keytool list
 ```
 
-> **Note:** On the first run, the CLI will perform a genesis process to initialize the local database located at `~/.kari/kanari-db/`.
+> **Note:** Node state is stored under the configured node data directory. The default user data layout uses `.kanari` paths, for example `%USERPROFILE%\.kanari` on Windows.
+
+### Query node stats
+
+```bash
+cargo run -p kanari -- client stats --rpc http://127.0.0.1:6767/rpc
+```
+
+### Transfer tokens
+
+```bash
+cargo run -p kanari -- client transfer \
+  --rpc http://127.0.0.1:6767/rpc \
+  --to <RECIPIENT_ADDRESS> \
+  --amount 1 \
+  --password <PASSWORD>
+```
+
+After the transaction commits, checkpoint height advances. If no transactions are submitted, checkpoint height should remain stable.
 
 ### Move VM Integration
 
@@ -115,6 +147,6 @@ cargo run -p kanari -- move test <path-to-move-package>
 ```
 
 <Callout type="info" title="Blue Tip">
-  For more advanced configuration, check the `config` directory in the root of
-  the project.
+  For multi-node setup, explicit consensus keys, snapshots, and validator
+  backup, continue with the Operations section.
 </Callout>

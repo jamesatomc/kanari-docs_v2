@@ -1,4 +1,4 @@
 {
   "title": "Introduction",
-  "pages": ["getting-started", "setup-node", "kanari-cli"]
+  "pages": ["getting-started", "setup-node"]
 }

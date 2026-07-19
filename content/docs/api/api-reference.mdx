@@ -5,7 +5,7 @@ description: Documentation for interacting with Kanari Network via API.
 
 # API Reference
 
-The Kanari Network provides a suite of APIs for developers to interact with the blockchain, manage metadata, deploy smart contracts, and query transaction data. It is divided into two main systems: the **REST API** for general data and wallet management, and the **JSON-RPC API** for deep Node interactions and Move Modules.
+Kanari nodes expose an Axum JSON-RPC API for blockchain state, transactions, Move modules, objects, NFTs, checkpoints, and diagnostics. Public deployments should place a gateway or load balancer in front of multiple RPC nodes.
 
 {/* <div className="p-4 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 mb-8">
   <h4 className="text-blue-800 dark:text-blue-300 font-bold mb-1">REST API Base URL</h4>
@@ -14,66 +14,18 @@ The Kanari Network provides a suite of APIs for developers to interact with the 
   </p>
 </div> */}
 
-## Authentication
+## Endpoint
 
-All REST API requests require an API key passed in the header:
+JSON-RPC requests are POST requests to `/rpc`:
 
-```http
-Authorization: Bearer YOUR_API_KEY
+```text
+http://127.0.0.1:19001/rpc
+http://192.168.1.101:19001/rpc
 ```
 
-## Part 1: REST API
+Opening the base URL in a browser is not the same as calling JSON-RPC. Use POST with `Content-Type: application/json`.
 
-The REST API provides a set of endpoints for managing accounts, token balances, and transactions.
-
-### Wallet & Token API
-
-Endpoints for managing accounts and token operations.
-
-#### 1. Get Balance
-
-**GET** `/accounts/{address}/balance`
-
-Returns the token balance for a specific address.
-
-**Response:**
-
-```json
-{
-  "address": "0x1234...",
-  "balance": 1500.50,
-  "currency": "KANARI",
-  "token" : {
-    "name": "Kanari Token",
-    "symbol": "KANARI",
-    "decimals": 18
-  }
-}
-```
-
-#### 2. Initiate Transfer
-
-**POST** `/transfer`
-
-Send tokens from one account to another.
-
-**Request Body:**
-
-```json
-{
-  "to": "0xrecipient...address",
-  "amount": 50.0,
-  "memo": "Payment for services"
-}
-```
-
-## Part 2: JSON-RPC API
-
-The JSON-RPC server is used for low-level node interactions, particularly for publishing and querying Move modules.
-
-### Request Wrapper
-
-All requests use the JSON-RPC 2.0 wrapper via POST with `Content-Type: application/json`:
+## Request Wrapper
 
 ```json
 {
@@ -83,6 +35,24 @@ All requests use the JSON-RPC 2.0 wrapper via POST with `Content-Type: applicati
   "id": 1
 }
 ```
+
+## Common methods
+
+Method names are defined in `crates/kanari-rpc-api`.
+
+| Area | Examples |
+| --- | --- |
+| Chain stats/checkpoints | `kanari_getStats`, `kanari_getBlockHeight`, `kanari_getBlock`, `kanari_getFullBlock` |
+| State roots/diagnostics | `kanari_getSmtStatus`, `kanari_getCanonicalStateSnapshot`, `kanari_compareCanonicalStateSnapshot` |
+| Transactions | `kanari_getTransaction`, `kanari_buildNativeTransfer`, `kanari_submitTransaction` |
+| Balances/assets | token balance, owner balances, fungible asset holders, asset transactions |
+| Objects/modules | get object, get object by ref, list modules, verify module, publish package/module |
+| NFTs | owned NFTs and collections |
+| Move calls | build/call function and view function |
+
+<Callout type="warning" title="Public RPC">
+  Node-side limits protect the process, but high-traffic deployments still need gateway rate limits, caching, health checks, and request body limits.
+</Callout>
 
 ### Module Methods
 
@@ -185,7 +155,7 @@ curl -X POST http://127.0.0.1:19001/rpc \
 
 ## Error Codes
 
-The API uses standard HTTP status codes:
+The HTTP response can be `200` while the JSON-RPC payload contains an `error` object. Client code should inspect both the HTTP status and JSON-RPC response body.
 
 | Code | Description |
 | :--- | :--- |

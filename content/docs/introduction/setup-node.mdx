@@ -5,7 +5,9 @@ description: Learn how to set up and run a Kanari Network node.
 
 # Setup Node
 
-This guide provides instructions for setting up and running a Kanari Network node, based on the latest commands available in the `kanari-node` binary.
+This guide provides instructions for setting up and running a Kanari Network node with the current transaction-driven checkpoint and Mysticeti DAG integration.
+
+For the full command reference, see [Kanari Node CLI](/docs/cli/kanari-node).
 
 ## Prerequisites
 
@@ -15,8 +17,10 @@ Ensure you have built the project as described in the [Compile and install](/doc
 
 - **P2P Networking**: Built with `libp2p`.
 - **Automatic Discovery**: mDNS for local network and Kademlia DHT for wider discovery.
-- **Message Propagation**: Gossipsub protocol for blocks and transactions.
+- **Message Propagation**: Gossipsub protocol for transactions, checkpoints, and DAG metadata.
 - **NAT Traversal**: Supports DCUtR (Hole Punching) and Relay Server mode.
+- **Transaction-driven checkpoints**: Idle nodes do not create new checkpoint height without transactions.
+- **Strict recovery paths**: Snapshots and encrypted validator backups are available for repair and migration.
 
 ---
 
@@ -25,7 +29,7 @@ Ensure you have built the project as described in the [Compile and install](/doc
 To start a standard node with default settings:
 
 ```bash
-kanari-node start --p2p-port 19000 --rpc-port 19001 --rpc-host 0.0.0.0 --data-dir ./data
+kanari-node start --network devnet --p2p-port 19000 --rpc-port 19001 --rpc-host 0.0.0.0 --data-dir ./data
 ```
 
 ### Available Options for `start`
@@ -35,32 +39,46 @@ kanari-node start --p2p-port 19000 --rpc-port 19001 --rpc-host 0.0.0.0 --data-di
 - `--rpc-host`: RPC listen host/IP (default: `0.0.0.0`).
 - `--data-dir`: Directory for blockchain and state storage.
 - `--relay-server`: Run as a relay server to help nodes behind NAT.
-- `--moderate`: Enable moderate mode for 8-16 cores (10K-30K TPS).
-- `--high-throughput`: Enable high-throughput mode for 500K+ TPS (requires 64+ cores).
 - `--authority-id`: Authority ID for DAG consensus (e.g., `0x1`).
 - `--authorities`: Comma-separated list of authority IDs.
+- `--consensus-private-key-file`: Private consensus key file for this validator.
+- `--consensus-public-keys`: Shared public-key map for the authority set.
+- `--genesis`: Shared genesis manifest used to verify that all nodes join the same chain.
 
 ---
 
 ## Multi-Node Setup (Local)
 
-Running multiple nodes locally is useful for testing consensus and synchronization. Each node **must** have a unique data directory and unique ports.
+Running multiple nodes locally is useful for testing consensus and synchronization. Each node **must** have a unique data directory, unique ports, unique consensus private key, and the same public-key map.
+
+The recommended Windows devnet reset is:
+
+```powershell
+cd D:\kanari-sdk\crates\kanari-node
+
+.\setup-multi-node.ps1 `
+  -NodeCount 4 `
+  -Network devnet `
+  -ResetSourceData `
+  -ResetReplicaData `
+  -ResetConsensusKeys
+```
 
 ### Manual Setup (Example for 3 Nodes)
 
 **Node 1 (Authority 0x1)**
 ```bash
-kanari-node start --p2p-port 19000 --rpc-port 19001 --data-dir data/node1 --authority-id 0x1 --authorities 0x1,0x2,0x3
+kanari-node start --network devnet --p2p-port 19000 --rpc-port 19001 --data-dir data/node1 --authority-id 0x1 --authorities 0x1,0x2,0x3
 ```
 
 **Node 2 (Authority 0x2)**
 ```bash
-kanari-node start --p2p-port 19010 --rpc-port 19011 --data-dir data/node2 --authority-id 0x2 --authorities 0x1,0x2,0x3
+kanari-node start --network devnet --p2p-port 19010 --rpc-port 19011 --data-dir data/node2 --authority-id 0x2 --authorities 0x1,0x2,0x3
 ```
 
 **Node 3 (Authority 0x3)**
 ```bash
-kanari-node start --p2p-port 19020 --rpc-port 19021 --data-dir data/node3 --authority-id 0x3 --authorities 0x1,0x2,0x3
+kanari-node start --network devnet --p2p-port 19020 --rpc-port 19021 --data-dir data/node3 --authority-id 0x3 --authorities 0x1,0x2,0x3
 ```
 
 ---
@@ -109,4 +127,6 @@ kanari-node block <HEIGHT>
 
 - **Discovered Peers**: Check the logs for `Node Peer ID:` and `Discovered peer:` to confirm P2P connectivity.
 - **Port Conflicts**: Ensure `--p2p-port` and `--rpc-port` are not used by other applications.
-- **Data Corruption**: If you encounter state issues, you can delete the `--data-dir` and restart the node to perform a fresh sync.
+- **Height not increasing while idle**: This is expected. New checkpoints are produced when transactions commit.
+- **RPC URL in browser looks empty**: JSON-RPC is served through POST requests to `/rpc`, for example `http://127.0.0.1:19001/rpc`.
+- **State divergence**: Prefer snapshot restore or encrypted validator backup restore instead of deleting data blindly.

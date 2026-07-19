@@ -13,10 +13,10 @@ A transfer involves sending a specified amount of tokens from a sender's address
 
 ## How to Transfer
 
-To perform a transfer using the Kanari CLI, use the following command structure:
+To perform a transfer using the Kanari CLI, use the current client command:
 
 ```bash
-cargo run -p kanari -- transfer --to <RECIPIENT_ADDRESS> --amount <AMOUNT>
+cargo run -p kanari -- client transfer --to <RECIPIENT_ADDRESS> --amount <AMOUNT> --password <PASSWORD>
 ```
 
 ### Example
@@ -24,7 +24,17 @@ cargo run -p kanari -- transfer --to <RECIPIENT_ADDRESS> --amount <AMOUNT>
 If you want to send **100 tokens** to the address `0x123...abc`:
 
 ```bash
-cargo run -p kanari -- transfer --to 0x1234567890abcdef --amount 100
+cargo run -p kanari -- client transfer --to 0x1234567890abcdef --amount 100 --password "<PASSWORD>"
+```
+
+For a running local node:
+
+```bash
+cargo run -p kanari -- client transfer \
+  --rpc http://127.0.0.1:6767/rpc \
+  --to 0x1234567890abcdef \
+  --amount 100 \
+  --password "<PASSWORD>"
 ```
 
 ## Verification
@@ -32,7 +42,7 @@ cargo run -p kanari -- transfer --to 0x1234567890abcdef --amount 100
 After the transfer is completed, you can verify the new balances by listing the wallets:
 
 ```bash
-cargo run -p kanari -- list-wallets
+cargo run -p kanari -- client balance --owner <ADDRESS>
 ```
 
 <div className="p-4 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
@@ -50,3 +60,11 @@ Every transfer includes metadata that can be tracked:
 - **Amount**: The quantity of tokens transferred.
 - **Timestamp**: The exact time the transaction was recorded.
 - **Transaction Hash**: A unique identifier for the transfer.
+
+## Coin and gas objects
+
+Native KANARI transfers use Move object execution. The mutable transfer coin and gas payment coin must be distinct objects. If a wallet has only one usable KANARI coin, consolidate/split or fund a separate gas coin before sending high-volume transfers.
+
+## Checkpoint behavior
+
+A submitted transfer may first appear as pending or simulated while the node waits for commit. Once committed, the transfer should appear in transaction history and advance checkpoint height. If no transactions are submitted, height should remain stable.
